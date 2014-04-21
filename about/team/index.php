@@ -39,11 +39,11 @@
           <p><a class="btn btn-default" href="http://resources.library.yale.edu/StaffDirectory/detail.aspx?q=718" role="button">Personal Website &raquo;</a></p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-6 col-sm-6">
-          <img class="img-circle" src="img/panko.jpg" alt="Generic placeholder image"  height=150px>
-          <h2>Ken Panko</h2>
-          <p>Currently the Director of Educational Resources and Technology at Yale-NUS College. He previously served as the Director of Yale University's Center for Media and Instructional Innovation (CMI2) where he served as project manager of Photogrammar.</p>
-          <p><a class="btn btn-default" href="http://www.kenpanko.com/" role="button">Personal Website &raquo;</a></p>
-        </div><!-- /.col-lg-4 -->
+          <img class="img-circle" src="img/kirkpatrick.png" alt="Trip Kirkpatrick, project manager"  height=150px>
+          <h2>Trip Kirkpatrick</h2>
+          <p><strong>Project Manager.</strong> He works in Yale's Instructional Technology Group and previously supported Yale language instruction at the Yale Center for Language Study.</p>
+          <p><a class="btn btn-default" href="http://itg.yale.edu" role="button">Personal Website</a></p>
+        </div><!-- /.col-lg-6 -->
       </div><!-- /.row -->
 
       <!-- FOOTER -->

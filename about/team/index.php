@@ -44,7 +44,15 @@
           <p><strong>Project Manager.</strong> He works in Yale's Instructional Technology Group and previously supported Yale language instruction at the Yale Center for Language Study.</p>
           <p><a class="btn btn-default" href="http://itg.yale.edu" role="button">Personal Website</a></p>
         </div><!-- /.col-lg-6 -->
-      </div><!-- /.row -->
+
+		<section class="col-lg-6 col-sm-6">
+		  <h2 style="margin: 50px 0px 20px 0px; font-size:38px;">Project Alumni</h2>
+		  <img height="150px" alt="Generic placeholder image" src="img/panko.jpg" class="img-circle">
+		  <h2>Ken Panko</h2>
+		  <p>Currently the Director of Educational Resources and Technology at Yale-NUS College. He previously served as the Director of Yale University's Center for Media and Instructional Innovation (CMI2) where he served as project manager of Photogrammar.</p>
+		  <p><a role="button" href="http://www.kenpanko.com/" class="btn btn-default">Personal Website »</a></p>
+		</section>
+	  </div><!-- /.row -->
 
       <!-- FOOTER -->
       <footer>

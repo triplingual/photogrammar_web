@@ -2,6 +2,7 @@
 
 require_once 'login.php';
 $page = search; 
+$ERROR_MSG = "An error occurred. Please try again or send a message to <a href='mailto:thephotogrammar@gmail.com'>thephotogrammar@gmail.com</a> describing what happened.";
 $bodyopts = 'onload="initialize()"';
 include '../header.php';
 echo <<<_END
@@ -110,7 +111,7 @@ echo <<<_END
 
 <div id="wrapper" class="clearfix" style="padding:75px">
 
-<div id="content-wrapper" class="clearfix" >
+<div id="content-wrapper" class="clearfix" style="max-width:1000px" >
 
 <div id="results-content" class="clearfix">
 
@@ -118,11 +119,24 @@ echo <<<_END
 <div id="results-header-toprow">
 _END;
 
-$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-
-if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
-
-mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
+$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
+if ($mysqli->connect_error) {
+	if ($DEBUGGING)	{
+	    die('Connect Error (' . $mysqli->connect_errno . ') '
+            . $mysqli->connect_error);
+	}
+	else {
+	    die($ERROR_MSG);
+	}
+}
+if(!$mysqli) {
+	if ($DEBUGGING)	{
+		die("Unable to connect to MySQL: " .mysql_error());
+	}
+	else {
+		die($ERROR_MSG);
+	}
+}
 
 $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>'', 'year_stop'=>'', 'van'=>'', 'lot'=>'', 'city'=>'',
                  'county'=>'', 'state'=>'', 'title'=>'', 'start'=>0);
@@ -142,7 +156,7 @@ if(isset($_GET['start']))
     $fval['year_stop'] = $_GET['year_stop'];
     $fval['van'] = $_GET['van'];
     $fval['lot'] = $_GET['lot'];
-    $fval['city'] = $_GET['city'];
+    $fval['city'] = ($_GET['city'] != "NA") ? $_GET['city'] : '';
     $fval['county'] = $_GET['county'];
     $fval['state'] = $_GET['state'];
     $fval['title'] = $_GET['title'];
@@ -151,36 +165,89 @@ if(isset($_GET['start']))
     $van_code = substr(get_post('van'), 0, 1);
     $van_string = substr(get_post('van'), 1);
 
-    $query = "SELECT * FROM photo2 WHERE pname LIKE '%" . get_post('pname') . "%' ";
-/*              "lotnum LIKE '%" . get_post('lot') . "%' AND " . */
-	if ($_GET['lot']!=""){     $query .=         "AND lotnum ='" . get_post('lot') . "' ";};
-	$query .= "AND city LIKE '%" . get_post('city') . "%' AND " .
-             "county LIKE '%" . get_post('county') . "%' AND " .
-             "state LIKE '%" . get_post('state') . "%' AND " .
-             "title LIKE '%" . get_post('title') . "%' AND " .
-             "year >=" . get_post('year_start') . " AND year <=" . get_post('year_stop')  . " AND " .
-             "month >=" . get_post('month_start') . " AND month <=" . get_post('month_stop');
-
-    if($van_code == "A") $query = $query . " AND van0='" . $van_string . "'";
-    if($van_code == "B") $query = $query . " AND van1='" . $van_string . "'";
-    if($van_code == "C") $query = $query . " AND van2='" . $van_string . "'";
-
-    $query = $query . " ORDER BY year, month, cnumber ";
+// BUILD QUERYSTRING, ABSTRACTING VALUES
     if(get_post('search') != "") {
         $querySearch = "+" . get_post('search');
         $querySearch = str_replace(" ", " +", $querySearch);
         $querySearch = str_replace(" +NOT +", " -", $querySearch);
         $querySearch = str_replace("+NOT +", " -", $querySearch);
-        $query = "SELECT * FROM photo2 WHERE MATCH(pname, van0, van1, van2, city, county, state, country, title) AGAINST('" . $querySearch . "' IN BOOLEAN MODE) ";
+        $query = "SELECT * FROM photo  WHERE fips != 'NA' AND MATCH(pname, van0, van1, van2, city, county, state, country, title) AGAINST('" . $querySearch . "' IN BOOLEAN MODE) ";
+    } else {
+		$query = "SELECT * FROM photo WHERE fips != 'NA' AND pname LIKE ? ";
+		$query .= ($fval['lot'] == '') ? "AND lotnum > ? " : "AND lotnum = ? ";
+		//if ($_GET['lot']!=""){ $query .= "AND lotnum ='?' ";};
+		$query .= "AND city LIKE ? AND " .
+				 "county LIKE ? AND " .
+				 "state LIKE ? AND " .
+				 "title LIKE ? AND " .
+				 "year >= ? AND year <= ? AND " .
+				 "month >= ? AND month <= ? ";
+
+		if($van_code == "A") {
+			$query = $query . " AND van0 = ?";
+		} else if($van_code == "B") {
+			$query = $query . " AND van1 = ?";
+		} else if($van_code == "C") {
+			$query = $query . " AND van2 = ?";
+		} else {
+			$query = $query . " AND van0 LIKE ?";
+		}
+
+		$query = $query . " ORDER BY year, month, cnumber";
     }
 
-/*     echo $query; */
-    //echo '<br />';
-    //$query = "SELECT * FROM photo";
-    $result = mysql_query($query);
-/*     echo '<span style="font-family:monospace;font-size:0.7em;color:grey;">' . $query . '</span><br>'; */
-    if (!$result) die ("Database access failed: " . mysql_error());
-    $rows = mysql_num_rows($result);
+
+// ASSIGN VALUES TO VARIABLES
+    $pname_query = "%" . $fval['pname'] . "%";
+    $month_start_query = $fval['month_start'];
+    $month_stop_query = $fval['month_stop'];
+    $year_start_query = $fval['year_start'];
+    $year_stop_query = $fval['year_stop'];
+    $van_query = "%" . $fval['van'] . "%";
+    $city_query = "%" . $fval['city'] . "%";
+    $county_query = "%" . $fval['county'] . "%";
+    $state_query = "%" . $fval['state'] . "%";
+    $title_query = "%" . $fval['title'] . "%";
+    $start_query = "%" . $fval['start'] . "%";
+	$lotnum = ($fval['lot'] == '') ? -1 : $fval['lot'];
+
+// PREPARE QUERY
+	if (!($stmt = $mysqli->prepare($query))) {
+		if ($DEBUGGING)	{
+			die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+// BIND VARIABLES
+	if (!$stmt->bind_param( 'sissssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $title_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
+		die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+	}
+
+// EXECUTE QUERY
+	if (!$stmt->execute()) {
+		if ($DEBUGGING)	{
+			die("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+// GET QUERY RESULTS
+	if (!($res = $stmt->get_result())) {
+		if ($DEBUGGING)	{
+			die("Getting result set failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+    $rows = $res->num_rows;
+
     if(get_post('search') != "") {
         echo '<div id="results-total"><h2>' . $rows . ' pictures of ' . get_post('search') . '</h2>';
     } else {
@@ -193,36 +260,21 @@ if(isset($_GET['start']))
     if ($fval['month_start'] != '') {echo $mons[$fval['month_start']] . " ";};
     echo $fval['year_start'] . " to " . $mons[$fval['month_stop']] . " " .  $fval['year_stop'] . ": ";
 
-
-   
-/*
-
-    if ($fval['van']         != '') { echo "Classification: " . $fval['van'];		};
-    if ($fval['city']        != '') { echo "City: " . $fval['city'];		};
-    if ($fval['county']      != '') { echo "County: " . $fval['county'];		};
-    if ($fval['state']       != '') { echo "State: " . $fval['state'];		};
-*/
-
         echo '</span>';
        
     }
 
-
-    //for Photographer:"' . get_post('photographer') . '", Lot = "' .
-        //get_post('lotNum') . '"' . '", County = "' .
-        //get_post('secondPolitical') . '"'  .  '", Year = "' . get_post('year') . '"' ;
-    //if($rows > 200) echo ' ; Showing only first 200 results';
     if($rows != 0) {
     	echo '</div><!--/#results-total--><div id="results-pager"><span>Results: </span>';
-    	if(get_post('start') != 0) {
+    	if(sanitize_int('start') != 0) {
         	$query_arr = $_GET;
         	$query_arr["start"] = max($query_arr["start"] - 60, 0);
         	$query_call = http_build_query($query_arr);
         	echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '">&laquo; </a>';
     	}
-        	echo  (get_post('start') + 1)  . '-' . min(get_post('start') + 60, $rows);
+        	echo  (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
     }
-        if(get_post('start') + 60 < $rows) {
+        if(sanitize_int('start') + 60 < $rows) {
             $query_arr = $_GET;
             $query_arr["start"] = $query_arr["start"] + 60;
             $query_call = http_build_query($query_arr);
@@ -232,70 +284,81 @@ if(isset($_GET['start']))
     echo '</div><!--/#results-pager-->';
     echo '</div><!--/#results-header-toprow-->';
     echo '</div><!--/#results-header-->';
-    echo '<div id="return-link" class="clearfix"><a href="http://photogrammar.yale.edu/search/">Start New Search</a></div><!--/#return-link-->';
+    echo '<div id="return-link" class="clearfix"><a href="/search/">Start New Search</a></div><!--/#return-link-->';
     echo '<div id="results-gallery" class="clearfix">';
 
 
-    for($j = get_post('start'); $j < min(get_post('start') + 60, $rows); ++$j)
+    for($j = sanitize_int('start'); $j < min(sanitize_int('start') + 60, $rows); ++$j)
     {
-        $pmon =  intval(mysql_result($result, $j, 'month'));
-        $pdate = $mons[$pmon] . mysql_result($result, $j, 'year');
-        $ptitle = mysql_result($result, $j, 'title');
+    	$res->data_seek($j);
+		$row = $res->fetch_array(MYSQLI_ASSOC);
+        $pmon =  intval($row['month']);
+        $pdate = $mons[$pmon] . $row['year'];
+        $ptitle = $row['title'];
         if(strlen($ptitle) > 90) {
             $ptitle = substr($ptitle,0,85) . "...";
         }
        echo '<div class="results-container">';
-       echo '<div class="results-image"><a href=http://photogrammar.yale.edu/records/index.php?record=' .mysql_result($result, $j, 'cnumber') . '>';
-       //echo '<img src="http://lcweb2.loc.gov/service/pnp/fsac/1a34000/1a34300/1a34309r.jpg" height="228" />';
+       echo '<div class="results-image"><a href=/records/index.php?record=' .$row['cnumber'] . '>';
        echo '<img class="results-thumb" src="';
-    if (substr(mysql_result($result, $j, 'thumb_url'), -2) != 'NA') {
-      if (mysql_result($result, $j, 'thumb_url') == '') {
+    if (substr($row['thumb_url'], -2) != 'NA') {
+      if ($row['thumb_url'] == '') {
 	      echo '/images/nophoto.png';
       }
-      if (mysql_result($result, $j, 'thumb_url') != '') {
-  	  	echo 'http://maps.library.yale.edu/images/public/photogrammar/' . mysql_result($result, $j, 'thumb_url');
+      if ($row['thumb_url'] != '') {
+  	  	echo 'http://photogrammar.research.yale.edu/photos' . $row['thumb_url'];
   	  }
     }
-    if (substr(mysql_result($result, $j, 'thumb_url'), -2) == 'NA') {
-  	  echo 'http://maps.library.yale.edu/images/public/photogrammar/' . mysql_result($result, $j, 'small_url');
+    if (substr($row['thumb_url'], -2) == 'NA') {
+  	  echo 'http://photogrammar.research.yale.edu/photos' . $row['small_url'];
     }
        echo '" />';
        echo '</a></div><!--/.results-image-->';
        echo '<div id="results-meta">';
        echo '<div id="results-title">' . $ptitle . '</div>';
-       echo '<div id="results-photographer">' .mysql_result($result, $j, 'pname') . '</div>';
+       echo '<div id="results-photographer">' .$row['pname'] . '</div>';
        echo '<div id="results-date">' . $pdate . '</div>';
-       if(($j - get_post('start')) % 6 == 5);
+       if(($j - sanitize_int('start')) % 6 == 5);
        echo '</div><!--/#results-meta-->';
        echo '</div><!--/.results-container-->';
     }
     echo '</div><!--/#results-gallery-->';
     if($rows != 0) {
         echo '<div id="results-footer" class="clearfix"><div id="results-pager"><span>Results: </span>';
-        if(get_post('start') != 0) {
+        if(sanitize_int('start') != 0) {
             $query_arr = $_GET;
             $query_arr["start"] = max($query_arr["start"] - 60, 0);
             $query_call = http_build_query($query_arr);
-            echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '">&laquo; </a>';
+            echo '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
         }
-    echo  (get_post('start') + 1)  . '-' . min(get_post('start') + 60, $rows);
+    echo  (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
     }
-        if(get_post('start') + 60 < $rows) {
+        if(sanitize_int('start') + 60 < $rows) {
             $query_arr = $_GET;
             $query_arr["start"] = $query_arr["start"] + 60;
             $query_call = http_build_query($query_arr);
-            echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '"> &raquo;</a>'; 
+            echo '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
     }
 
     echo '</div><!--/#results-pager--></div><!--/#results-footer-->';
 
 }
+/*
+live: http://photogrammar.research.yale.edu/photos/service/pnp/cph/3c20000/3c24000/3c24300/3c24371_150px.jpg
+local: http://photogrammar.research.yale.edu/images/public/photogrammar/service/pnp/cph/3c20000/3c24000/3c24300/3c24371_150px.jpg
+*/
 
-mysql_close($db_server);
+$res->free();
+$stmt->close();
+$mysqli->close();
 
 function get_post($var)
 {
-    return mysql_real_escape_string($_GET[$var]);
+	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_STRING);
+}
+function sanitize_int($var)
+{
+	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_NUMBER_INT);
 }
 
 echo <<<_END

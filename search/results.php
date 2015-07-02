@@ -1,4 +1,5 @@
 <?php
+// TODO : Results paging/buffering
 
 require_once 'login.php';
 $page = search; 
@@ -150,6 +151,7 @@ if(isset($_GET['start']))
 {
 
     $fval['pname'] = $_GET['pname'];
+//    $fval['month_start'] = sanitize_int('month_start'); // something's not working here
     $fval['month_start'] = $_GET['month_start'];
     $fval['month_stop'] = $_GET['month_stop'];
     $fval['year_start'] = $_GET['year_start'];

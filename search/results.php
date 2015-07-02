@@ -237,16 +237,36 @@ if(isset($_GET['start']))
 	}
 
 // GET QUERY RESULTS
-	if (!($res = $stmt->get_result())) {
-		if ($DEBUGGING)	{
-			die("Getting result set failed: (" . $stmt->errno . ") " . $stmt->error);
-		}
-		else {
-			die($ERROR_MSG);
-		}
-	}
+/*
+	NOTE: Our webhost's PHP is not compiled with MySQL Native Driver (mysqlnd)
+	so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
+	though, we iterate through the returned fields in the metadata and bind that way.
+*/
+//	TODO: Only select the fields we need.
 
-    $rows = $res->num_rows;
+	$stmt->store_result();
+	$meta = $stmt->result_metadata();
+    while ($field = $meta->fetch_field())
+    {
+        $params[] = &$row[$field->name];
+    }
+
+    call_user_func_array(array($stmt, 'bind_result'), $params);
+    
+	while ($stmt->fetch()) {
+		foreach($row as $key => $val)
+		{
+			$c[$key] = $val;
+	//		echo $c . ", ";
+	//		echo $key . ", ";
+	//		echo $val . "<br />";
+		}
+		$result[] = $c;
+    }
+	//print_r($result);
+
+    
+    $rows = $stmt->num_rows;
 
     if(get_post('search') != "") {
         echo '<div id="results-total"><h2>' . $rows . ' pictures of ' . get_post('search') . '</h2>';
@@ -257,15 +277,16 @@ if(isset($_GET['start']))
    if ($fval['pname'] != '') { echo "by " . $fval['pname']; };
        if ($fval['lot'] != '') { echo " in Lot Number " . $fval['lot']; };
     echo  " from ";
+
     if ($fval['month_start'] != '') {echo $mons[$fval['month_start']] . " ";};
+
     echo $fval['year_start'] . " to " . $mons[$fval['month_stop']] . " " .  $fval['year_stop'] . ": ";
 
         echo '</span>';
-       
     }
 
     if($rows != 0) {
-    	echo '</div><!--/#results-total--><div id="results-pager"><span>Results: </span>';
+    	echo '</div><!--/#results-total-->' . PHP_EOL . '<div id="results-pager"><span>Results: </span>';
     	if(sanitize_int('start') != 0) {
         	$query_arr = $_GET;
         	$query_arr["start"] = max($query_arr["start"] - 60, 0);
@@ -281,17 +302,19 @@ if(isset($_GET['start']))
             echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '"> &raquo;</a>'; 
         }
 
-    echo '</div><!--/#results-pager-->';
-    echo '</div><!--/#results-header-toprow-->';
-    echo '</div><!--/#results-header-->';
-    echo '<div id="return-link" class="clearfix"><a href="/search/">Start New Search</a></div><!--/#return-link-->';
+    echo '</div><!--/#results-pager-->' . PHP_EOL;
+    echo '</div><!--/#results-header-toprow-->' . PHP_EOL;
+    echo '</div><!--/#results-header-->' . PHP_EOL;
+    echo '<div id="return-link" class="clearfix"><a href="/search/">Start New Search</a></div><!--/#return-link-->' . PHP_EOL;
     echo '<div id="results-gallery" class="clearfix">';
-
 
     for($j = sanitize_int('start'); $j < min(sanitize_int('start') + 60, $rows); ++$j)
     {
-    	$res->data_seek($j);
-		$row = $res->fetch_array(MYSQLI_ASSOC);
+    	$stmt->data_seek($j);
+    	$stmt->fetch();
+//   		echo $row['pname'];
+
+//		$row = $res->fetch_array(MYSQLI_ASSOC);
         $pmon =  intval($row['month']);
         $pdate = $mons[$pmon] . $row['year'];
         $ptitle = $row['title'];
@@ -313,16 +336,16 @@ if(isset($_GET['start']))
   	  echo 'http://photogrammar.research.yale.edu/photos' . $row['small_url'];
     }
        echo '" />';
-       echo '</a></div><!--/.results-image-->';
+       echo '</a></div><!--/.results-image-->' . PHP_EOL;
        echo '<div id="results-meta">';
        echo '<div id="results-title">' . $ptitle . '</div>';
        echo '<div id="results-photographer">' .$row['pname'] . '</div>';
        echo '<div id="results-date">' . $pdate . '</div>';
        if(($j - sanitize_int('start')) % 6 == 5);
-       echo '</div><!--/#results-meta-->';
-       echo '</div><!--/.results-container-->';
+       echo '</div><!--/#results-meta-->' . PHP_EOL;
+       echo '</div><!--/.results-container-->' . PHP_EOL;
     }
-    echo '</div><!--/#results-gallery-->';
+    echo '</div><!--/#results-gallery-->' . PHP_EOL;
     if($rows != 0) {
         echo '<div id="results-footer" class="clearfix"><div id="results-pager"><span>Results: </span>';
         if(sanitize_int('start') != 0) {
@@ -340,15 +363,11 @@ if(isset($_GET['start']))
             echo '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
     }
 
-    echo '</div><!--/#results-pager--></div><!--/#results-footer-->';
+    echo '</div><!--/#results-pager-->' . PHP_EOL . '</div><!--/#results-footer-->' . PHP_EOL;
 
 }
-/*
-live: http://photogrammar.research.yale.edu/photos/service/pnp/cph/3c20000/3c24000/3c24300/3c24371_150px.jpg
-local: http://photogrammar.research.yale.edu/images/public/photogrammar/service/pnp/cph/3c20000/3c24000/3c24300/3c24371_150px.jpg
-*/
 
-$res->free();
+$stmt->free_result();
 $stmt->close();
 $mysqli->close();
 

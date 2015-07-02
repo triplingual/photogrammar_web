@@ -2,7 +2,7 @@
 // TODO : Results paging/buffering
 
 require_once 'login.php';
-$page = search; 
+$page = "search"; 
 $ERROR_MSG = "An error occurred. Please try again or send a message to <a href='mailto:thephotogrammar@gmail.com'>thephotogrammar@gmail.com</a> describing what happened.";
 $bodyopts = 'onload="initialize()"';
 include '../header.php';

@@ -1,2 +1,10 @@
 .DS_Store
 login.php
+
+search/db_test.php
+
+search/index copy.php
+
+*.BAK*
+
+*.NEW*

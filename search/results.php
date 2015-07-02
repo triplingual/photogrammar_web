@@ -108,8 +108,6 @@ echo <<<_END
             });
     </script>
     
-    <script type="text/javascript" src="../js/mapping.js"></script>
-
 <div id="wrapper" class="clearfix" style="padding:75px">
 
 <div id="content-wrapper" class="clearfix" style="max-width:1000px" >

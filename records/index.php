@@ -103,11 +103,10 @@ if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
 mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
 
 $fval = array('record'=>'');
-$mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', '5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',
-                 '9'=>'September ', '10'=>'October ', '11'=>'November ', '12'=>'December ', '0'=>'');
-echo <<<_END
-
-_END;
+$mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', 
+				'5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',
+                '9'=>'September ', '10'=>'October ', '11'=>'November ', 
+                '12'=>'December ', '0'=>'');
 
 if(isset($_GET['record']))
 {
@@ -188,69 +187,63 @@ if(isset($_GET['record']))
     $psmallurl = $row['small_url'];
 
     
-    $ploc = '<a class="record-text" href="/search/results.php?start=0&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pstate . '</a>';
-    if($pcounty != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pcounty . '</a>' . ", " . $ploc;
-    if($pcity != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&city=' . $pcity . '&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pcity . '</a>' . ", " . $ploc;
+    $ploc = '<a class="record-text" href="/search/results.php?start=0&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pstate . '</a>';
+    if($pcounty != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pcounty . '</a>' . ", " . $ploc;
+    if($pcity != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&city=' . $pcity . '&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pcity . '</a>' . ", " . $ploc;
     
     if($ptitle == "") $ptitle = "None";
     if($ploc == "") $ploc = "Unknown";
     if($pvannum0 == "" & $pvannum0 == "" & $pvannum0 == "") $pvannum0 = "None";
 
     echo '<div id="record-meta"><!--<h2>Record Information</h2>-->';
-    echo '<div id="record-title"><h3 class="record-heading first">Caption <span style="font-size:.8em; color:grey; font-weight:normal;">(Original Description)</span></h3><span class="record-text">' . $ptitle . '</div><!--/#record-title--><div id="record-photographer"><h3 class="record-heading">Photographer</h3>';
+    echo '<div id="record-title"><h3 class="record-heading first">Caption <span style="font-size:.8em; color:grey; font-weight:normal;">(Original Description)</span></h3><span class="record-text">' . $ptitle . '</div><!--/#record-title-->' . PHP_EOL;
+    echo '<div id="record-photographer"><h3 class="record-heading">Photographer</h3>';
 
-
-     if($pnom != "") {
-   
-    echo '<a href="/search/results.php?start=0&pname=' . $pnom . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pnom . '</a>';
+	if($pnom != "") {
+		echo '<a href="/search/results.php?start=0&pname=' . $pnom . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pnom . '</a>';
     }
-
-     if($pnom == "") {
-   
-    echo '<span class="record-text">Unknown</span>';
+    if($pnom == "") {
+		echo '<span class="record-text">Unknown</span>';
     }    
     
-    echo '</div><!--/#record-photographer-->';
+    echo '</div><!--/#record-photographer-->' . PHP_EOL;
     echo '<div id="record-created" class="record-field"><h3 class="record-heading">Created</h3>';
     if($pdate != "0") {
   	  echo '<a class="record-text" href="/search/results.php?start=0&year_start=' . $pyear . '&month_start=' . $pmon . '&year_stop=' . $pyear . '&month_stop=' . $pmon . '">' . $pdate . '</a>';
     }
     if($pdate == "0") { echo '<span class="record-text">Unknown</span>';};
-    echo '</div><!--/#record-created-->';
-    
-    
-     
-    echo '<div id="record-notes" class="record-field"><h3 class="record-heading">Location</h3><span >' . $ploc . '</span></div><!--/#record-notes-->';
+    echo '</div><!--/#record-created-->' . PHP_EOL;
+
+    echo '<div id="record-notes" class="record-field"><h3 class="record-heading">Location</h3><span >' . $ploc . '</span></div><!--/#record-notes-->' . PHP_EOL;
+
 	if ($pvannum1!="") {
-    echo '<div id="record-classification" class="record-field"><h3 class="record-heading">Classification<span style="font-size:.8em;color:grey; font-weight:normal;"> (Original Tagging System)</span></h3><span class="record-text"><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=A' . $pvannum0 . '" >' . $pvannum0 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=B' . $pvannum1 . '" >' . $pvannum1 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=C' . $pvannum2 . '" >' . $pvannum2 . '</a></li></ul></li></ul></li></ul></span></div><!--/#record-classification-->';
+	    echo '<div id="record-classification" class="record-field"><h3 class="record-heading">Classification<span style="font-size:.8em;color:grey; font-weight:normal;"> (Original Tagging System)</span></h3><span class="record-text"><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=A' . $pvannum0 . '" >' . $pvannum0 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=B' . $pvannum1 . '" >' . $pvannum1 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=C' . $pvannum2 . '" >' . $pvannum2 . '</a></li></ul></li></ul></li></ul></span></div><!--/#record-classification-->' . PHP_EOL;
 	};
     echo '<div id="record-notes" class="record-field"><h3 class="record-heading">Lot Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Shooting Assignment)</span></h3>';
     if($plot != "0") {
     	echo '<a class="record-text" href="/search/results.php?start=0&lot=' . $plot . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12">' . $plot . '</a>';
     };
     if($plot == "0") {
-    echo '<span class="record-text">None</span>';
+    	echo '<span class="record-text">None</span>';
     }
-    echo '</div><!--/#record-notes-->';
-    echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div><!--/#record-digitalid-->';
+    echo '</div><!--/#record-notes-->' . PHP_EOL;
+    echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div><!--/#record-digitalid-->' . PHP_EOL;
     
-    echo '</div><!--/#record-meta-->';
+    echo '</div><!--/#record-meta-->' . PHP_EOL;
     echo '<div id="record-image"><img src="';
     if (substr($photourl, -2) != 'NA') {
-	if ($photourl == '') {
-	      echo '/images/nophotolarge.png';
-      }
-      if ($photourl != '') {
-  	  	echo 'http://photogrammar.research.yale.edu/photos' . $plargeurl;
-  	  }
+		if ($photourl == '') {
+			  echo '/images/nophotolarge.png';
+		}
+		if ($photourl != '') {
+			echo 'http://photogrammar.research.yale.edu/photos' . $plargeurl;
+		}
     }
     if (substr($photourl, -2) == 'NA') {
-  	  echo 'http://photogrammar.research.yale.edu/photos' . $psmallurl;
+		echo 'http://photogrammar.research.yale.edu/photos' . $psmallurl;
     }
 
-    
-    echo '"/></div><!--/#record-image-->';
-
+    echo '"/></div><!--/#record-image-->' . PHP_EOL;
 }
 
 $stmt->free_result();
@@ -262,15 +255,14 @@ function get_post($var)
 	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_STRING);
 }
 
-echo <<<_END
+?>
 
 </div><!--/#record-content-->
 
 </div><!--/#content-wrapper-->
 
-
 </div><!--/#wrapper-->
 
-_END;
-
-include '../footer.php'; ?>
+<?php
+include '../footer.php'; 
+?>

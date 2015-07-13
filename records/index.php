@@ -26,7 +26,7 @@ if(!$mysqli) {
 
 $fval['record'] = "";
 
-echo <<<_END
+?>
 
     <style>
 #record-content {
@@ -94,14 +94,8 @@ echo <<<_END
 <div id="content-wrapper" class="clearfix">
 
 <div id="record-content" class="clearfix">
-_END;
 
-$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-
-if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
-
-mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
-
+<?php
 $fval = array('record'=>'');
 $mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', 
 				'5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',

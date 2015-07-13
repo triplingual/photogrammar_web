@@ -32,7 +32,7 @@ $fval['record'] = "";
 #record-content {
 	margin: 0 auto;
 	padding: 20px 0 0 0;
-	width:1100px;
+	width:850px;
 }
 #record-meta {
 	float: left;
@@ -43,12 +43,12 @@ $fval['record'] = "";
 	margin:0 0 5px;
 }
 #record-image {
-	float:right;
-	text-align:right;
-	width:65%;
+	float:left;
+	text-align:left;
 }
 #record-image img {
-	max-width:700px;
+	max-width:550px;
+	padding-left:25px;
 }
 #record-photographer {
 	margin:10px 0 0;

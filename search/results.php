@@ -293,7 +293,7 @@ if(isset($_GET['start']))
         	$query_arr = $_GET;
         	$query_arr["start"] = max($query_arr["start"] - 60, 0);
         	$query_call = http_build_query($query_arr);
-        	echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '">&laquo; </a>';
+        	echo '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
     	}
         	echo  (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
     }
@@ -301,7 +301,7 @@ if(isset($_GET['start']))
             $query_arr = $_GET;
             $query_arr["start"] = $query_arr["start"] + 60;
             $query_call = http_build_query($query_arr);
-            echo '<a href="' . 'http://photogrammar.yale.edu/search/results.php?' . $query_call . '"> &raquo;</a>'; 
+            echo '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
         }
 
     echo '</div><!--/#results-pager-->' . PHP_EOL;

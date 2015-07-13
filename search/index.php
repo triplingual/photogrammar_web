@@ -5,13 +5,15 @@ include '../header.php';
 ?>
 
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 <style>
 #search-content {
-	margin:0 auto;
-	padding:0;
-	width:1100px;
+	margin:45px auto;
+	padding:10px;
+	width:500px;
+	height:100%;
+        background-color:#777777;
+        color:white;
 }
 .search-row {
 	margin:0 0 10px;
@@ -34,7 +36,7 @@ include '../header.php';
 	width:300px;
 }
 #search-full .search-field input {
-	width: 600px;
+	width: 350px;
 }
 #search-button {
 	margin:20px 0 0 182px;
@@ -48,12 +50,13 @@ include '../header.php';
 </style>
  
 <link href="select2/select2.css" rel="stylesheet"/>
+<link href="select2-bootstrap.css" rel="stylesheet"/>
 <style>
 div.select2-result-label, .select2-choice, .select2-searching, .select2-no-results {font-family:sans-serif;}
 </style>
-<script src="select2/select2.js"></script>
     
     <script>
+      function main() {
     history.navigationMode = 'compatible';
     window.onunload = function(){};
     
@@ -146,9 +149,11 @@ div.select2-result-label, .select2-choice, .select2-searching, .select2-no-resul
 			    
 			     
 			    });
-			   
+			    };
+			   window.onload = main;
        </script>
  
+<div style="background-color:#777777; width=100%">
 
 <div id="wrapper" class="clearfix">
 
@@ -166,8 +171,7 @@ if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
 mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
 
 $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>'', 'year_stop'=>'', 'van'=>'', 'lot'=>'', 'city'=>'', 'county'=>'', 'state'=>'', 'title'=>'', 'start'=>0);
-
-echo <<<_END
+?>
 
 <form action='results.php' method='get' id='photosearch' class='clearfix'>
 <input type ="hidden" id="start" name="start" value=0>
@@ -177,12 +181,14 @@ echo <<<_END
 <div id="search-full" class="search-row">
 
     <div class="search-field">
-    	<input type ="text" name="search"/> <button class="button" style='	font-family: Arial, Helvetica, sans-serif;
-	font-size:0.8em;
+    	<input type ="text" name="search"/> <button class="button" style='font-family: Arial, Helvetica, sans-serif;
+	font-size:1em;
 	font-weight:bold;
-	padding:5px 10px;' type='submit' value='Search'/>Search</button>
+	padding:5px 10px;' type='submit' value='Search'>Search</button>
+	
     </div>
 </div><!--/#search-full-->
+</div>
 </fieldset>
 
 <fieldset  style="margin-top:30px;">
@@ -193,14 +199,15 @@ echo <<<_END
     	<h3>Photographer</h3>
     </div>
     <div class="search-field">
-     <select id="pname" name="pname" style="width:400px;">
-_END;
+     <select id="pname" name="pname" style="width:250px;">
+
+<?php
     $pnamequery = "SELECT DISTINCT pname FROM photo2 ORDER BY pname ASC";
 	$pnameresult = mysql_query($pnamequery) or die(mysql_error());
 	while($row = mysql_fetch_array($pnameresult)){
 		echo "<option value=\"" . $row['pname'] . "\">" . $row['pname'] . "</option>";
 		}
-echo <<<_END
+?>
  
    	</select>
     </div>
@@ -213,19 +220,19 @@ echo <<<_END
     </div>
     <div class="search-field">
    
-     <select id="lot" name="lot" style="width:200px;">
+     <select id="lot" name="lot" style="width:250px;">
      <option></option>
-_END;
+
+<?php
     $pnamequery = "SELECT DISTINCT lotnum FROM photo2 WHERE lotnum !='0' ORDER BY lotnum ASC";
 	$pnameresult = mysql_query($pnamequery) or die(mysql_error());
 	while($row = mysql_fetch_array($pnameresult)){
 		echo "<option value=\"" . $row['lotnum'] . "\">" . $row['lotnum'] . "</option>";
 		}
-echo <<<_END
- 
+?>
    	</select>
     </div>
-     <br><div class="clearfix" style="margin-left:190px;width:600px;color:grey;font-size:.8em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&search=&pname=&lot=1070&van=&state=&county=&city=&year_start=1935&month_start=1&year_stop=1945&month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940.  Paul Vanderbilt developed the lot system. </div>
+     <br><div  style="margin-left:190px;width:250px;color:e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&amp;search=&amp;pname=&amp;lot=1070&amp;van=&amp;state=&amp;county=&amp;city=&amp;year_start=1935&amp;month_start=1&amp;year_stop=1945&amp;month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940.  Paul Vanderbilt developed the lot system. </div>
 
 </div><!--/#search-lot-->
 
@@ -234,10 +241,10 @@ echo <<<_END
     	<h3>Classification Tags</h3>
     </div>
     <div class="search-field">
-        <input type="hidden" id ="van" name="van" style="width:800px;" />
+        <input type="hidden" id ="van" name="van" style="width:250px;" />
 
     </div><!--/.search-field-->
-   <br><div style="margin-left:190px;width:600px;color:grey;font-size:.8em;font-family:sans-serif;">88,000 photographs in the collection have tags assigned.  There are twelve main subject headings (ex. THE LAND) and 1300 sub-headings (ex. Mountains, Deserts, Foothills, Plains).   Paul Vanderbilt began to develop the classification system in 1942. </div>
+   <br><div style="margin-left:190px;width:250px;color:e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs in the collection have tags assigned.  There are twelve main subject headings (ex. THE LAND) and 1300 sub-headings (ex. Mountains, Deserts, Foothills, Plains).   Paul Vanderbilt began to develop the classification system in 1942. </div>
 </div><!--/#search-classification-->
 
 <div id="search-place">
@@ -246,20 +253,20 @@ echo <<<_END
             <h3>Location</h3>
         </div>
         <div class="search-field">
-     <select id="state" name="state" style="width:200px;">
-_END;
+     <select id="state" name="state" style="width:250px;">
+<?php
     $statequery = "SELECT DISTINCT state FROM photo2 ORDER BY state ASC";
 	$stateresult = mysql_query($statequery) or die(mysql_error());
 	while($row = mysql_fetch_array($stateresult)){
 		echo "<option value=\"" . $row['state'] . "\">" . $row['state'] . "</option>";
 		}
-echo <<<_END
+?>
  
    	</select>  
    	<input id="county" type="hidden"  style="width:200px;" name="county"/>  
    	<input id="city" type="hidden" style="width:200px;" name="city"/>    
    	</div>
-    
+    </div>
 </div><!--/#search-place-->
 
 <div id="search-year" class="search-row">
@@ -336,32 +343,36 @@ echo <<<_END
 </div><!--/#search-month-->
 
 <div id="search-button">
-	<button type='submit' value='Search'/>Search</button>
+	<button type='submit' value='Search'>Search</button>
 </div><!--/#search-button-->
 </fieldset>
 </form>
 </div>
-_END;
 
-
+<?php
 mysql_close($db_server);
 
 function get_post($var)
 {
     return mysql_real_escape_string($_GET[$var]);
 }
-
-echo <<<_END
+?>
 
 </div><!--/#search-content-->
 
 </div><!--/#content-wrapper-->
 
-</div><!--/#wrapper-->
+</div>
 
 </body>
 
 </html>
-_END;
-
-?>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="select2/select2.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/holder.js"></script>
+  </body>
+</html>

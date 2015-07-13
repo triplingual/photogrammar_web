@@ -161,17 +161,27 @@ if(isset($_GET['start']))
     $van_code = substr(get_post('van'), 0, 1);
     $van_string = substr(get_post('van'), 1);
 
-// BUILD QUERYSTRING, ABSTRACTING VALUES
+// BUILD QUERYSTRING, ABSTRACTING VALUES AS APPROPRIATE
     if(get_post('search') != "") {
         $querySearch = "+" . get_post('search');
         $querySearch = str_replace(" ", " +", $querySearch);
         $querySearch = str_replace(" +NOT +", " -", $querySearch);
         $querySearch = str_replace("+NOT +", " -", $querySearch);
         $query = "SELECT * FROM photo  WHERE fips != 'NA' AND MATCH(pname, van0, van1, van2, city, county, state, country, title) AGAINST('" . $querySearch . "' IN BOOLEAN MODE) ";
+
+	// PREPARE QUERY
+		if (!($stmt = $mysqli->prepare($query))) {
+			if ($DEBUGGING)	{
+				die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+			}
+			else {
+				die($ERROR_MSG);
+			}
+		}
+
     } else {
 		$query = "SELECT * FROM photo WHERE fips != 'NA' AND pname LIKE ? ";
 		$query .= ($fval['lot'] == '') ? "AND lotnum > ? " : "AND lotnum = ? ";
-		//if ($_GET['lot']!=""){ $query .= "AND lotnum ='?' ";};
 		$query .= "AND city LIKE ? AND " .
 				 "county LIKE ? AND " .
 				 "state LIKE ? AND " .
@@ -190,37 +200,38 @@ if(isset($_GET['start']))
 		}
 
 		$query = $query . " ORDER BY year, month, cnumber";
+
+	// ASSIGN VALUES TO VARIABLES
+		$pname_query = "%" . $fval['pname'] . "%";
+		$month_start_query = $fval['month_start'];
+		$month_stop_query = $fval['month_stop'];
+		$year_start_query = $fval['year_start'];
+		$year_stop_query = $fval['year_stop'];
+		$van_query = "%" . $fval['van'] . "%";
+		$city_query = "%" . $fval['city'] . "%";
+		$county_query = "%" . $fval['county'] . "%";
+		$state_query = "%" . $fval['state'] . "%";
+		$title_query = "%" . $fval['title'] . "%";
+		$start_query = "%" . $fval['start'] . "%";
+		$lotnum = ($fval['lot'] == '') ? -1 : $fval['lot'];
+
+	// PREPARE QUERY
+		if (!($stmt = $mysqli->prepare($query))) {
+			if ($DEBUGGING)	{
+				die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+			}
+			else {
+				die($ERROR_MSG);
+			}
+		}
+
+	// BIND VARIABLES
+		if (!$stmt->bind_param( 'sissssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $title_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
+			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+		}
+
     }
 
-
-// ASSIGN VALUES TO VARIABLES
-    $pname_query = "%" . $fval['pname'] . "%";
-    $month_start_query = $fval['month_start'];
-    $month_stop_query = $fval['month_stop'];
-    $year_start_query = $fval['year_start'];
-    $year_stop_query = $fval['year_stop'];
-    $van_query = "%" . $fval['van'] . "%";
-    $city_query = "%" . $fval['city'] . "%";
-    $county_query = "%" . $fval['county'] . "%";
-    $state_query = "%" . $fval['state'] . "%";
-    $title_query = "%" . $fval['title'] . "%";
-    $start_query = "%" . $fval['start'] . "%";
-	$lotnum = ($fval['lot'] == '') ? -1 : $fval['lot'];
-
-// PREPARE QUERY
-	if (!($stmt = $mysqli->prepare($query))) {
-		if ($DEBUGGING)	{
-			die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
-		}
-		else {
-			die($ERROR_MSG);
-		}
-	}
-
-// BIND VARIABLES
-	if (!$stmt->bind_param( 'sissssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $title_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
-		die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
-	}
 
 // EXECUTE QUERY
 	if (!$stmt->execute()) {

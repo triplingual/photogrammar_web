@@ -6,8 +6,7 @@ $page = "search";
 $ERROR_MSG = "An error occurred. Please try again or send a message to <a href='mailto:thephotogrammar@gmail.com'>thephotogrammar@gmail.com</a> describing what happened.";
 $bodyopts = 'onload="initialize()"';
 include '../header.php';
-echo <<<_END
-
+?>
 
 <style>
 #results-content {
@@ -116,7 +115,7 @@ echo <<<_END
 
 <div id="results-header" class="clearfix">
 <div id="results-header-toprow">
-_END;
+<?php
 
 $mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
 if ($mysqli->connect_error) {
@@ -141,9 +140,6 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
                  'county'=>'', 'state'=>'', 'title'=>'', 'start'=>0);
 $mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', '5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',
                  '9'=>'September ', '10'=>'October ', '11'=>'November ', '12'=>'December ', '0'=>'');
-echo <<<_END
-
-_END;
 
 if(isset($_GET['start']))
 {
@@ -257,14 +253,9 @@ if(isset($_GET['start']))
 		foreach($row as $key => $val)
 		{
 			$c[$key] = $val;
-	//		echo $c . ", ";
-	//		echo $key . ", ";
-	//		echo $val . "<br />";
 		}
 		$result[] = $c;
     }
-	//print_r($result);
-
     
     $rows = $stmt->num_rows;
 
@@ -380,7 +371,7 @@ function sanitize_int($var)
 	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_NUMBER_INT);
 }
 
-echo <<<_END
+?>
 
 </div><!--/#results-content-->
 
@@ -391,6 +382,6 @@ echo <<<_END
 </body>
 
 </html>
-_END;
+<?php
 include '../footer.php'; 
 ?>

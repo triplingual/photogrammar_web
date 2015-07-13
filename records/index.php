@@ -1,14 +1,10 @@
 <?php
-$page = search;
+require_once 'login.php';
+$page = "search";
 $ERROR_MSG = "An error occurred. Please try again or send a message to <a href='mailto:thephotogrammar@gmail.com'>thephotogrammar@gmail.com</a> describing what happened.";
 $bodyopts = 'onload="initialize()"';
 include '../header.php';
-require_once 'login.php';
 
-
-if(isset($_GET['record']))
-{
-    
 $mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
 if ($mysqli->connect_error) {
 	if ($DEBUGGING)	{
@@ -27,6 +23,7 @@ if(!$mysqli) {
 		die($ERROR_MSG);
 	}
 }
+
 $fval['record'] = "";
 
 echo <<<_END
@@ -114,8 +111,86 @@ _END;
 
 if(isset($_GET['record']))
 {
+	$fval['record'] = get_post('record');
+
+    $query = "SELECT * FROM photo WHERE cnumber= ? ";
+
+	if (!($stmt = $mysqli->prepare($query))) {
+		if ($DEBUGGING)	{
+			die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// BIND VARIABLES
+	if (!$stmt->bind_param( 's', $fval['record'] )) {
+		if ($DEBUGGING)	{
+			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// EXECUTE QUERY
+	if (!$stmt->execute()) {
+		if ($DEBUGGING)	{
+			die("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// GET QUERY RESULTS
+	/*
+		NOTE: Our webhost's PHP is not compiled with MySQL Native Driver (mysqlnd)
+		so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
+		though, we iterate through the returned fields in the metadata and bind that way.
+	*/
+	//	TODO: Only select the fields we need.
+	$stmt->store_result();
+	$meta = $stmt->result_metadata();
+    while ($field = $meta->fetch_field())
+    {
+        $params[] = &$row[$field->name];
+    }
+
+    call_user_func_array(array($stmt, 'bind_result'), $params);
     
+	while ($stmt->fetch()) {
+		foreach($row as $key => $val)
+		{
+			$c[$key] = $val;
+		}
+		$result[] = $c;
+    }
+	$stmt->data_seek(0);
+	$stmt->fetch();
+
+    // STORE DATABASE RESULTS IN VARIABLES
+    $ptitle = $row['title'];
+    $pnom = $row['pname'];
+    $pmon =  intval($row['month']);
+    $pyear =  $row['year'];
+    $pdate = $mons[$pmon] . $pyear;
+    $pstate = $row['state'];
+    $pcounty = $row['county'];
+    $pcity = $row['city'];
+    $pcounty = $row['county'];
+    $pstate = $row['state'];
+    $pvannum0 = $row['van0'];
+    $pvannum1 = $row['van1'];
+    $pvannum2 = $row['van2'];
+    $plot = intval($row['lotnum']);
+    $pcnumber2 = $row['cnumber2'];
+    $photourl = $row['large_url'];
+    $plargeurl = $row['large_url'];
+    $psmallurl = $row['small_url'];
+
     
+    $ploc = '<a class="record-text" href="/search/results.php?start=0&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pstate . '</a>';
+    if($pcounty != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pcounty . '</a>' . ", " . $ploc;
+    if($pcity != "") $ploc = '<a class="record-text" href="/search/results.php?start=0&city=' . $pcity . '&county=' . $pcounty . '&state=' . $pstate . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12"  class="record-text">' . $pcity . '</a>' . ", " . $ploc;
     
     if($ptitle == "") $ptitle = "None";
     if($ploc == "") $ploc = "Unknown";
@@ -127,6 +202,7 @@ if(isset($_GET['record']))
 
      if($pnom != "") {
    
+    echo '<a href="/search/results.php?start=0&pname=' . $pnom . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12" class="record-text">' . $pnom . '</a>';
     }
 
      if($pnom == "") {
@@ -137,6 +213,7 @@ if(isset($_GET['record']))
     echo '</div><!--/#record-photographer-->';
     echo '<div id="record-created" class="record-field"><h3 class="record-heading">Created</h3>';
     if($pdate != "0") {
+  	  echo '<a class="record-text" href="/search/results.php?start=0&year_start=' . $pyear . '&month_start=' . $pmon . '&year_stop=' . $pyear . '&month_stop=' . $pmon . '">' . $pdate . '</a>';
     }
     if($pdate == "0") { echo '<span class="record-text">Unknown</span>';};
     echo '</div><!--/#record-created-->';
@@ -145,25 +222,30 @@ if(isset($_GET['record']))
      
     echo '<div id="record-notes" class="record-field"><h3 class="record-heading">Location</h3><span >' . $ploc . '</span></div><!--/#record-notes-->';
 	if ($pvannum1!="") {
+    echo '<div id="record-classification" class="record-field"><h3 class="record-heading">Classification<span style="font-size:.8em;color:grey; font-weight:normal;"> (Original Tagging System)</span></h3><span class="record-text"><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=A' . $pvannum0 . '" >' . $pvannum0 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=B' . $pvannum1 . '" >' . $pvannum1 . '</a><ul><li><a class="record-text" style="font-size:1em;" href="/search/results.php?start=0&year_start=1935&month_start=0&year_stop=1945&month_stop=12&van=C' . $pvannum2 . '" >' . $pvannum2 . '</a></li></ul></li></ul></li></ul></span></div><!--/#record-classification-->';
 	};
     echo '<div id="record-notes" class="record-field"><h3 class="record-heading">Lot Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Shooting Assignment)</span></h3>';
     if($plot != "0") {
+    	echo '<a class="record-text" href="/search/results.php?start=0&lot=' . $plot . '&year_start=1935&month_start=0&year_stop=1945&month_stop=12">' . $plot . '</a>';
     };
     if($plot == "0") {
     echo '<span class="record-text">None</span>';
     }
     echo '</div><!--/#record-notes-->';
+    echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div><!--/#record-digitalid-->';
     
     echo '</div><!--/#record-meta-->';
     echo '<div id="record-image"><img src="';
     if (substr($photourl, -2) != 'NA') {
-  if ($photourl == '') {
+	if ($photourl == '') {
 	      echo '/images/nophotolarge.png';
       }
       if ($photourl != '') {
+  	  	echo 'http://photogrammar.research.yale.edu/photos' . $plargeurl;
   	  }
     }
     if (substr($photourl, -2) == 'NA') {
+  	  echo 'http://photogrammar.research.yale.edu/photos' . $psmallurl;
     }
 
     
@@ -171,9 +253,13 @@ if(isset($_GET['record']))
 
 }
 
+$stmt->free_result();
+$stmt->close();
+$mysqli->close();
 
 function get_post($var)
 {
+	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_STRING);
 }
 
 echo <<<_END

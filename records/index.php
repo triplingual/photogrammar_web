@@ -221,7 +221,65 @@ if(isset($_GET['record']))
     	echo '<span class="record-text">None</span>';
     }
     echo '</div><!--/#record-notes-->' . PHP_EOL;
-    echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div><!--/#record-digitalid-->' . PHP_EOL;
+    echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div>' . PHP_EOL;
+
+	$similarquery = 'SELECT similarphoto, pname, year, howsimilar, title, thumb_url FROM similarity_new JOIN photo ON photo.cnumber=CONCAT(similarity_new.similarphoto, "/PP") where thisphoto= ? ORDER BY howsimilar DESC LIMIT 5';
+
+
+	$stmt->free_result();
+
+	if (!($stmt = $mysqli->prepare($similarquery))) {
+		if ($DEBUGGING)	{
+			die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// BIND VARIABLES
+	$precord = substr($fval['record'],0,13);
+	if (!$stmt->bind_param( 's', $precord )) {
+		if ($DEBUGGING)	{
+			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// EXECUTE QUERY
+	if (!$stmt->execute()) {
+		if ($DEBUGGING)	{
+			die("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// GET QUERY RESULTS
+	/*
+		NOTE: Our webhost's PHP is not compiled with MySQL Native Driver (mysqlnd)
+		so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
+		though, we iterate through the returned fields in the metadata and bind that way.
+	*/
+	//	TODO: Only select the fields we need.
+	$stmt->store_result();
+	$meta = $stmt->result_metadata();
+    while ($field = $meta->fetch_field())
+    {
+        $params[] = &$similarrow[$field->name];
+    }
+
+    $stmt->bind_result($similar_record, $similar_pname, $similar_year, $similar_howsimilar, $similar_title, $similar_thumburl);
+
+	if ($stmt->num_rows > 0) {
+		echo '<div id="record-similar" class="record-field"><h3 class="record-heading">Similar Photos</h3>';
+		echo '<table style="line-height:100%;">';
+		while ($stmt->fetch()) {
+			echo '<tr>' . PHP_EOL . '<td style="border-bottom:1px dotted grey;padding-bottom:5px;"><span style="font-size:.8em;font-weight:bold;">' . $similar_pname . ', ' . $similar_year . '</span> <span style="font-size:.8em;color:LightGrey;"> (' . (round($similar_howsimilar,2)*100) . '%)</span><br><a target="_blank" href="/records/index.php?record=' . $similar_record . '/PP"><img src="http://photogrammar.research.yale.edu/photos' . $similar_thumburl . '" onload="this.width/=2;this.onload=null;"  style="float:left;margin-right:5px;" /></a><a class="record-text" target="_blank" href="/records/index.php?record=' . $similar_record . '/PP">'. $similar_title . '</a></td>' . PHP_EOL . '</tr>';
+	   		
+		};
+		echo '</table>' . PHP_EOL . '</div><!--/#record-digitalid-->' . PHP_EOL;
+    };
     
     echo '</div><!--/#record-meta-->' . PHP_EOL;
     echo '<div id="record-image"><img src="';

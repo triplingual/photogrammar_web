@@ -225,7 +225,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 	}
 
 	while($row = $result->fetch_object()){
-		echo "<option value=\"" . $row->pname . "\">" . $row->pname . "</option>";
+		echo "<option value=\"" . $row->pname . "\">" . $row->pname . "</option>" . PHP_EOL;
 	}
 
     $result->close();
@@ -258,7 +258,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 	}
 
 	while($row = $result->fetch_object()){
-		echo "<option value=\"" . $row->lotnum . "\">" . $row->lotnum . "</option>";
+		echo "<option value=\"" . $row->lotnum . "\">" . $row->lotnum . "</option>" . PHP_EOL;
 	}
 
     $result->close();
@@ -300,7 +300,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 	}
 
 	while($row = $result->fetch_object()){
-		echo "<option value=\"" . $row->state . "\">" . $row->state . "</option>";
+		echo "<option value=\"" . $row->state . "\">" . $row->state . "</option>" . PHP_EOL;
 	}
 
     $result->close();

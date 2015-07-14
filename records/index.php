@@ -27,6 +27,7 @@ if(!$mysqli) {
 $fval['record'] = "";
 
 ?>
+	<link rel="unapi-server" type="application/xml" title="unAPI" href="/records/unapi.php">
 
     <style>
 #record-content {

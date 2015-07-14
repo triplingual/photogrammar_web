@@ -265,7 +265,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 ?>
    	</select>
     </div>
-     <br><div  style="margin-left:190px;width:250px;color:#e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&amp;search=&amp;pname=&amp;lot=1070&amp;van=&amp;state=&amp;county=&amp;city=&amp;year_start=1935&amp;month_start=1&amp;year_stop=1945&amp;month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940.  Paul Vanderbilt developed the lot system. </div>
+     <br><div  style="margin-left:190px;width:250px;color:#e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&amp;search=&amp;pname=&amp;lot=1070&amp;van=&amp;state=&amp;county=&amp;city=&amp;year_start=1935&amp;month_start=1&amp;year_stop=1945&amp;month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940. Paul Vanderbilt developed the lot system. </div>
 
 </div><!--/#search-lot-->
 

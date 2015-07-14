@@ -55,7 +55,7 @@ include '../header.php';
 div.select2-result-label, .select2-choice, .select2-searching, .select2-no-results {font-family:sans-serif;}
 </style>
     
-    <script>
+    <script type="text/javascript">
       function main() {
     history.navigationMode = 'compatible';
     window.onunload = function(){};
@@ -145,7 +145,7 @@ div.select2-result-label, .select2-choice, .select2-searching, .select2-no-resul
 
 
 			
-					}).on("select2-loaded", function(e) { log ("loaded (data property omitted for brevitiy)");});
+					}).on("select2-loaded", function(e) { log ("loaded (data property omitted for brevity)");});
 			    
 			     
 			    });
@@ -153,15 +153,13 @@ div.select2-result-label, .select2-choice, .select2-searching, .select2-no-resul
 			   window.onload = main;
        </script>
  
-<div style="background-color:#777777; width=100%">
+<div style="background-color:#777777; width:100%">
 
-<div id="wrapper" class="clearfix">
+<div id="wrapper"style="background-color:#777777" class="clearfix">
 
 <div id="content-wrapper" class="clearfix">
 
 <div id="search-content">
-
-<h2 class="page-title">Search</h2>
 
 <?php
 $mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
@@ -190,7 +188,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 <input type ="hidden" id="start" name="start" value=0>
 <fieldset>
 <div>
-<legend style="font-family:sans-serif;font-weight:bold;">Full Text</legend>
+<legend style="font-family:sans-serif;font-weight:bold;color:#fff;">Full Text</legend>
 <div id="search-full" class="search-row">
 
     <div class="search-field">
@@ -205,14 +203,14 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 </fieldset>
 
 <fieldset  style="margin-top:30px;">
-<legend style="font-family:sans-serif;font-weight:bold;">Advanced</legend>
+<legend style="font-family:sans-serif;font-weight:bold;color:#fff;">Advanced</legend>
 
 <div id="search-photographer" class="search-row">
 	<div class="search-label">
     	<h3>Photographer</h3>
     </div>
     <div class="search-field">
-     <select id="pname" name="pname" style="width:250px;">
+	<select id="pname" name="pname" style="width:250px;">
 
 <?php
 	$pnamequery = "SELECT DISTINCT pname FROM photo2 ORDER BY pname ASC;";
@@ -265,7 +263,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 ?>
    	</select>
     </div>
-     <br><div  style="margin-left:190px;width:250px;color:e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&amp;search=&amp;pname=&amp;lot=1070&amp;van=&amp;state=&amp;county=&amp;city=&amp;year_start=1935&amp;month_start=1&amp;year_stop=1945&amp;month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940.  Paul Vanderbilt developed the lot system. </div>
+     <br><div  style="margin-left:190px;width:250px;color:#e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs were assigned a lot number, indicating a set of photographs organized primarily around a shooting assignment. As a result, lots tend to feature one photographer&rsquo;s set of photographs in a single place. For example, <a style="color:black;" href="/search/results.php?start=0&amp;search=&amp;pname=&amp;lot=1070&amp;van=&amp;state=&amp;county=&amp;city=&amp;year_start=1935&amp;month_start=1&amp;year_stop=1945&amp;month_stop=12">Lot 1070</a> features Arthur Rothstein&rsquo;s set in Clinton, Indiana in February 1940.  Paul Vanderbilt developed the lot system. </div>
 
 </div><!--/#search-lot-->
 
@@ -277,7 +275,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
         <input type="hidden" id ="van" name="van" style="width:250px;" />
 
     </div><!--/.search-field-->
-   <br><div style="margin-left:190px;width:250px;color:e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs in the collection have tags assigned.  There are twelve main subject headings (ex. THE LAND) and 1300 sub-headings (ex. Mountains, Deserts, Foothills, Plains).   Paul Vanderbilt began to develop the classification system in 1942. </div>
+   <br><div style="margin-left:190px;width:250px;color:#e3e3e3;font-size:.7em;font-family:sans-serif;">88,000 photographs in the collection have tags assigned.  There are twelve main subject headings (ex. THE LAND) and 1300 sub-headings (ex. Mountains, Deserts, Foothills, Plains).   Paul Vanderbilt began to develop the classification system in 1942. </div>
 </div><!--/#search-classification-->
 
 <div id="search-place">
@@ -386,7 +384,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 </div><!--/#search-month-->
 
 <div id="search-button">
-	<button type='submit' value='Search'>Search</button>
+	<button type='submit' style="font-size:1em;" value='Search'>Search</button>
 </div><!--/#search-button-->
 </fieldset>
 </form>
@@ -411,9 +409,6 @@ function sanitize_int($var)
 
 </div>
 
-</body>
-
-</html>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

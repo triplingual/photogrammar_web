@@ -164,11 +164,24 @@ div.select2-result-label, .select2-choice, .select2-searching, .select2-no-resul
 <h2 class="page-title">Search</h2>
 
 <?php
-$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-
-if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
-
-mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
+$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
+if ($mysqli->connect_error) {
+	if ($DEBUGGING)	{
+	    die('Connect Error (' . $mysqli->connect_errno . ') '
+            . $mysqli->connect_error);
+	}
+	else {
+	    die($ERROR_MSG);
+	}
+}
+if(!$mysqli) {
+	if ($DEBUGGING)	{
+		die("Unable to connect to MySQL: " .mysql_error());
+	}
+	else {
+		die($ERROR_MSG);
+	}
+}
 
 $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>'', 'year_stop'=>'', 'van'=>'', 'lot'=>'', 'city'=>'', 'county'=>'', 'state'=>'', 'title'=>'', 'start'=>0);
 ?>
@@ -202,11 +215,21 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
      <select id="pname" name="pname" style="width:250px;">
 
 <?php
-    $pnamequery = "SELECT DISTINCT pname FROM photo2 ORDER BY pname ASC";
-	$pnameresult = mysql_query($pnamequery) or die(mysql_error());
-	while($row = mysql_fetch_array($pnameresult)){
-		echo "<option value=\"" . $row['pname'] . "\">" . $row['pname'] . "</option>";
+	$pnamequery = "SELECT DISTINCT pname FROM photo2 ORDER BY pname ASC;";
+	if ($result = $mysqli->query($pnamequery)) {
+		if ($DEBUGGING)	{
+	    	echo "Photographer name query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+	while($row = $result->fetch_object()){
+		echo "<option value=\"" . $row->pname . "\">" . $row->pname . "</option>";
+	}
+
+    $result->close();
 ?>
  
    	</select>
@@ -225,10 +248,20 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 
 <?php
     $pnamequery = "SELECT DISTINCT lotnum FROM photo2 WHERE lotnum !='0' ORDER BY lotnum ASC";
-	$pnameresult = mysql_query($pnamequery) or die(mysql_error());
-	while($row = mysql_fetch_array($pnameresult)){
-		echo "<option value=\"" . $row['lotnum'] . "\">" . $row['lotnum'] . "</option>";
+	if ($result = $mysqli->query($pnamequery)) {
+		if ($DEBUGGING)	{
+	    	echo "Lot number query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+	while($row = $result->fetch_object()){
+		echo "<option value=\"" . $row->lotnum . "\">" . $row->lotnum . "</option>";
+	}
+
+    $result->close();
 ?>
    	</select>
     </div>
@@ -255,11 +288,21 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
         <div class="search-field">
      <select id="state" name="state" style="width:250px;">
 <?php
-    $statequery = "SELECT DISTINCT state FROM photo2 ORDER BY state ASC";
-	$stateresult = mysql_query($statequery) or die(mysql_error());
-	while($row = mysql_fetch_array($stateresult)){
-		echo "<option value=\"" . $row['state'] . "\">" . $row['state'] . "</option>";
+    $pnamequery = "SELECT DISTINCT state FROM photo2 ORDER BY state ASC";
+	if ($result = $mysqli->query($pnamequery)) {
+		if ($DEBUGGING)	{
+	    	echo "State query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+	while($row = $result->fetch_object()){
+		echo "<option value=\"" . $row->state . "\">" . $row->state . "</option>";
+	}
+
+    $result->close();
 ?>
  
    	</select>  
@@ -350,11 +393,15 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 </div>
 
 <?php
-mysql_close($db_server);
+$mysqli->close();
 
 function get_post($var)
 {
-    return mysql_real_escape_string($_GET[$var]);
+	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_STRING);
+}
+function sanitize_int($var)
+{
+	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_NUMBER_INT);
 }
 ?>
 

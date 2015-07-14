@@ -224,6 +224,12 @@ if(isset($_GET['record']))
     echo '</div><!--/#record-notes-->' . PHP_EOL;
     echo '<div id="record-digitalid" class="record-field"><h3 class="record-heading">Call Number<span style="font-size:.8em;color:grey; font-weight:normal;"> (Library of Congress)</span></h3><a class="record-text" target="_blank" href="http://www.loc.gov/pictures/item/' . $fval['record'] . '">' . $pcnumber2 . '</a></div>' . PHP_EOL;
 
+
+/*
+*
+*	SIMILAR IMAGES
+*
+*/
 	$similarquery = 'SELECT similarphoto, pname, year, howsimilar, title, thumb_url FROM similarity_new JOIN photo ON photo.cnumber=CONCAT(similarity_new.similarphoto, "/PP") where thisphoto= ? ORDER BY howsimilar DESC LIMIT 5';
 
 
@@ -283,7 +289,12 @@ if(isset($_GET['record']))
     };
     
     echo '</div><!--/#record-meta-->' . PHP_EOL;
-    echo '<div id="record-image"><img src="';
+/*
+*
+*	Finally, display the image
+*
+*/
+    echo '<div id="record-image"><img style="max-height:500px" src="';
     if (substr($photourl, -2) != 'NA') {
 		if ($photourl == '') {
 			  echo '/images/nophotolarge.png';

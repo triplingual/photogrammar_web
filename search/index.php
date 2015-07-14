@@ -215,6 +215,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 <?php
 	$pnamequery = "SELECT DISTINCT pname FROM photo2 ORDER BY pname ASC;";
 	if ($result = $mysqli->query($pnamequery)) {
+	} else {
 		if ($DEBUGGING)	{
 	    	echo "Photographer name query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}
@@ -247,6 +248,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 <?php
     $pnamequery = "SELECT DISTINCT lotnum FROM photo2 WHERE lotnum !='0' ORDER BY lotnum ASC";
 	if ($result = $mysqli->query($pnamequery)) {
+	} else {
 		if ($DEBUGGING)	{
 	    	echo "Lot number query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}
@@ -288,6 +290,7 @@ $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>''
 <?php
     $pnamequery = "SELECT DISTINCT state FROM photo2 ORDER BY state ASC";
 	if ($result = $mysqli->query($pnamequery)) {
+	} else {
 		if ($DEBUGGING)	{
 	    	echo "State query failed: (" . $mysqli->errno . ") " . $mysqli->error;
 		}

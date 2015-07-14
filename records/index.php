@@ -268,7 +268,6 @@ if(isset($_GET['record']))
 		so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
 		though, we iterate through the returned fields in the metadata and bind that way.
 	*/
-	//	TODO: Only select the fields we need.
 	$stmt->store_result();
 	$meta = $stmt->result_metadata();
     while ($field = $meta->fetch_field())

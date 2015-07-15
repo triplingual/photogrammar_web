@@ -286,25 +286,10 @@ if(isset($_GET['start']))
 
         echo '</span>';
     }
+	echo '</div><!--/#results-total-->' . PHP_EOL;
 
-    if($rows != 0) {
-    	echo '</div><!--/#results-total-->' . PHP_EOL . '<div id="results-pager"><span>Results: </span>';
-    	if(sanitize_int('start') != 0) {
-        	$query_arr = $_GET;
-        	$query_arr["start"] = max($query_arr["start"] - 60, 0);
-        	$query_call = http_build_query($query_arr);
-        	echo '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
-    	}
-        	echo  (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
-    }
-        if(sanitize_int('start') + 60 < $rows) {
-            $query_arr = $_GET;
-            $query_arr["start"] = $query_arr["start"] + 60;
-            $query_call = http_build_query($query_arr);
-            echo '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
-        }
+	echo build_pager_markup($rows, $_GET);
 
-    echo '</div><!--/#results-pager-->' . PHP_EOL;
     echo '</div><!--/#results-header-toprow-->' . PHP_EOL;
     echo '</div><!--/#results-header-->' . PHP_EOL;
     echo '<div id="return-link" class="clearfix"><a href="/search/">Start New Search</a></div><!--/#return-link-->' . PHP_EOL;
@@ -348,24 +333,9 @@ if(isset($_GET['start']))
        echo '</div><!--/.results-container-->' . PHP_EOL;
     }
     echo '</div><!--/#results-gallery-->' . PHP_EOL;
-    if($rows != 0) {
-        echo '<div id="results-footer" class="clearfix"><div id="results-pager"><span>Results: </span>';
-        if(sanitize_int('start') != 0) {
-            $query_arr = $_GET;
-            $query_arr["start"] = max($query_arr["start"] - 60, 0);
-            $query_call = http_build_query($query_arr);
-            echo '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
-        }
-    echo  (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
-    }
-        if(sanitize_int('start') + 60 < $rows) {
-            $query_arr = $_GET;
-            $query_arr["start"] = $query_arr["start"] + 60;
-            $query_call = http_build_query($query_arr);
-            echo '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
-    }
+	echo build_pager_markup($rows, $_GET);
 
-    echo '</div><!--/#results-pager-->' . PHP_EOL . '</div><!--/#results-footer-->' . PHP_EOL;
+    echo '</div><!--/#results-footer-->' . PHP_EOL;
 
 }
 
@@ -380,6 +350,32 @@ function get_post($var)
 function sanitize_int($var)
 {
 	return filter_input(INPUT_GET, $var, FILTER_SANITIZE_NUMBER_INT);
+}
+
+function build_pager_markup( $rows, $querystring )
+{
+	$pagerstring = "";
+    if($rows != 0) {
+    	$pagerstring = '<div id="results-pager"><span>Results: </span>';
+    	if(sanitize_int('start') != 0) {
+        	$query_arr = $_GET;
+        	$query_arr["start"] = max($query_arr["start"] - 60, 0);
+        	$query_call = http_build_query($query_arr);
+        	$pagerstring .= '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
+    	}
+        	$pagerstring .= (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
+    }
+	if(sanitize_int('start') + 60 < $rows) {
+		$query_arr = $_GET;
+		$query_arr["start"] = $query_arr["start"] + 60;
+		$query_call = http_build_query($query_arr);
+		$pagerstring .= '<a href="' . '/search/results.php?' . $query_call . '"> &raquo;</a>'; 
+	}
+    if($rows != 0) {
+	    $pagerstring .= '</div><!--/#results-pager-->' . PHP_EOL;
+	}
+
+	return $pagerstring;
 }
 
 ?>

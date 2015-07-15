@@ -4,8 +4,6 @@ $page = "search";
 include '../header.php';
 ?>
 
-    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
-
 <style>
 #search-content {
 	margin:45px auto;

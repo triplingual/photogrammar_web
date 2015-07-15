@@ -1,6 +1,6 @@
 <?php
 require_once 'login.php';
-$page = search; 
+$page = "search"; 
 include '../header.php';
 ?>
 

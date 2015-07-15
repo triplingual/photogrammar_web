@@ -8,6 +8,11 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
+<?php
+// TODO Use the $page variable to make this title more robust and accurate
+// e.g. <title>Photogrammar<php echo ($page != "" ? " | " . 
+//								ucfirst($page) : ""); ></title>
+?>
     <title>Photogrammar</title>
 
     <!-- Bootstrap core CSS -->

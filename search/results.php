@@ -95,6 +95,10 @@ include '../header.php';
 #results-photographer {
 	margin:0 0 3px;
 }
+
+.nobr {
+	white-space:nowrap;
+}
 </style>
 
 
@@ -286,6 +290,7 @@ if(isset($_GET['start']))
         $pdate = $mons[$pmon] . $res_year;
         $ptitle = $res_title;
         if(strlen($ptitle) > 90) {
+		    $ptitle = preg_replace('/\s+?(\S+)?$/', '', substr($ptitle, 0, 85)) . "<span class='nobr'> . . .</span>";
         }
        echo '<div class="results-container">';
        echo '<div class="results-image"><a href=/records/index.php?record=' . $res_cnumber . '>';

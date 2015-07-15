@@ -9,40 +9,95 @@ if (!isset($_GET['format'])){ // Initial format discovery query
 };
 
 if (isset($_GET['format'])){
-	$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-	$thispic = mysql_real_escape_string($_GET['id']);
-	if(!$db_server) die("Unable to connect to MySQL: " .mysql_error());
-	
-	mysql_select_db($db_database) or die('Unable to connect to MySQL: ' . mysql_error());
-	    $query = "SELECT * FROM photo2 JOIN photo_old ON photo_old.controlNum=photo2.cnumber WHERE photo_old.controlNum='". $thispic . "'";
-	    $result = mysql_query($query);
-	    $ptitle = mysql_result($result, 0,'title');
-	    $pshorttitle = preg_replace('/\s+?(\S+)?$/', '', substr($ptitle, 0, 41)) . "...";
-	    $pnom = mysql_result($result, 0, 'pname');
-	    if ($pnom == "") { $pnom = "Unknown";};
-	    $pnomarray = explode(' ', $pnom);
-	    $pnominitials = "";
-	    foreach ($pnomarray as $initialbuilder) {
-			$pnominitials .= $initialbuilder[0];
-			}
-	    $pnomlast = end($pnomarray);
-		$pnomfirst = $pnomarray[0];
-	    $pmon =  intval(mysql_result($result, 0, 'month'));
-$mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', '5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',                 '9'=>'September ', '10'=>'October ', '11'=>'November ', '12'=>'December ', '0'=>'');
 
-	    $pdate = $mons[$pmon] . mysql_result($result, 0, 'year');
-	    if ($pdate == "0") { $pdate = "Unknown";};
-	    $ploc = mysql_result($result, 0, 'state');
-	    $callnumber = mysql_result($result, 0, 'cnumber2');
-	    $pvannum0 = mysql_result($result, 0, 'van0');
-	    $pvannum1 = mysql_result($result, 0, 'van1');
-	    $pvannum2 = mysql_result($result, 0, 'van2');
-	    $medium = mysql_result($result, 0, 'medium');
+	$thispic = get_post('id');
 
-	    $mediumandsize = mysql_result($result, 0, 'medium');
-	    $mediumandsizeexploded = explode(" ; ", $mediumandsize);
-	    $medium = $mediumandsizeexploded[0];
-	    $size = $mediumandsizeexploded[1];
+	$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
+	if ($mysqli->connect_error) {
+		if ($DEBUGGING)	{
+			die('Connect Error (' . $mysqli->connect_errno . ') '
+				. $mysqli->connect_error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	if(!$mysqli) {
+		if ($DEBUGGING)	{
+			die("Unable to connect to MySQL: " .mysql_error());
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+
+    $query = "SELECT photo2.title as phototitle, pname, month, year, photo2.state, cnumber2, van0, van1, van2, medium FROM photo2 JOIN photo_old ON photo_old.controlNum=photo2.cnumber WHERE photo_old.controlNum = ?";
+	// PREPARE QUERY
+	if (!($stmt = $mysqli->prepare($query))) {
+		if ($DEBUGGING)	{
+			die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// BIND VARIABLES
+	if (!$stmt->bind_param( 's', $thispic )) {
+		if ($DEBUGGING)	{
+			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// EXECUTE QUERY
+	if (!$stmt->execute()) {
+		if ($DEBUGGING)	{
+			die("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		else {
+			die($ERROR_MSG);
+		}
+	}
+	// GET QUERY RESULTS
+	/*
+		NOTE: Our webhost's PHP is not compiled with MySQL Native Driver (mysqlnd)
+		so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
+		though, we iterate through the returned fields in the metadata and bind that way.
+	*/
+	//	TODO: Only select the fields we need.
+	$stmt->store_result();
+	$stmt->bind_result($phototitle, $pname, $month, $year, $state, $cnumber2, $van0, $van1, $van2, $medium);
+    
+	$stmt->fetch();
+
+	$ptitle = $phototitle;
+	$pshorttitle = preg_replace('/\s+?(\S+)?$/', '', substr($ptitle, 0, 41)) . "...";
+	$pnom = $pname;
+	if ($pnom == "") { $pnom = "Unknown";};
+	$pnomarray = explode(' ', $pnom);
+	$pnominitials = "";
+	foreach ($pnomarray as $initialbuilder) {
+		$pnominitials .= $initialbuilder[0];
+		}
+	$pnomlast = end($pnomarray);
+	$pnomfirst = $pnomarray[0];
+	$pmon =  intval($month);
+	$mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', '5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',                 '9'=>'September ', '10'=>'October ', '11'=>'November ', '12'=>'December ', '0'=>'');
+
+	$pdate = $mons[$pmon] . $year;
+	if ($pdate == "0") { $pdate = "Unknown";};
+	$ploc = $state;
+	$callnumber = $cnumber2;
+	$pvannum0 = $van0;
+	$pvannum1 = $van1;
+	$pvannum2 = $van2;
+	$medium = $medium;
+
+	$mediumandsize = $medium;
+	$mediumandsizeexploded = explode(" ; ", $mediumandsize);
+	$medium = $mediumandsizeexploded[0];
+	$size = $mediumandsizeexploded[1];
 
 	    
 	

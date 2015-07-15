@@ -137,7 +137,7 @@ if(!$mysqli) {
 }
 
 $fval = array('pname'=>'', 'month_start'=>'', 'month_stop'=>'', 'year_start'=>'', 'year_stop'=>'', 'van'=>'', 'lot'=>'', 'city'=>'',
-                 'county'=>'', 'state'=>'', 'title'=>'', 'start'=>0);
+                 'county'=>'', 'state'=>'', 'start'=>0);
 $mons = array('1'=>'January ', '2'=>'February ', '3'=>'March ', '4'=>'April ', '5'=>'May ', '6'=>'June ', '7'=>'July ', '8'=>'August ',
                  '9'=>'September ', '10'=>'October ', '11'=>'November ', '12'=>'December ', '0'=>'');
 
@@ -155,7 +155,6 @@ if(isset($_GET['start']))
     $fval['city'] = ($_GET['city'] != "NA") ? $_GET['city'] : '';
     $fval['county'] = $_GET['county'];
     $fval['state'] = $_GET['state'];
-    $fval['title'] = $_GET['title'];
     $fval['start'] = $_GET['start'];
 
     $van_code = substr(get_post('van'), 0, 1);
@@ -167,7 +166,7 @@ if(isset($_GET['start']))
         $querySearch = str_replace(" ", " +", $querySearch);
         $querySearch = str_replace(" +NOT +", " -", $querySearch);
         $querySearch = str_replace("+NOT +", " -", $querySearch);
-        $query = "SELECT * FROM photo  WHERE fips != 'NA' AND MATCH(pname, van0, van1, van2, city, county, state, country, title) AGAINST('" . $querySearch . "' IN BOOLEAN MODE) ";
+        $query = "SELECT month, year, title, thumb_url, small_url, pname, cnumber FROM photo  WHERE fips != 'NA' AND MATCH(pname, van0, van1, van2, city, county, state, country, title) AGAINST('" . $querySearch . "' IN BOOLEAN MODE) ";
 
 	// PREPARE QUERY
 		if (!($stmt = $mysqli->prepare($query))) {
@@ -180,12 +179,11 @@ if(isset($_GET['start']))
 		}
 
     } else {
-		$query = "SELECT * FROM photo WHERE fips != 'NA' AND pname LIKE ? ";
+		$query = "SELECT month, year, title, thumb_url, small_url, pname, cnumber FROM photo WHERE fips != 'NA' AND pname LIKE ? ";
 		$query .= ($fval['lot'] == '') ? "AND lotnum > ? " : "AND lotnum = ? ";
 		$query .= "AND city LIKE ? AND " .
 				 "county LIKE ? AND " .
 				 "state LIKE ? AND " .
-				 "title LIKE ? AND " .
 				 "year >= ? AND year <= ? AND " .
 				 "month >= ? AND month <= ? ";
 
@@ -211,7 +209,6 @@ if(isset($_GET['start']))
 		$city_query = "%" . $fval['city'] . "%";
 		$county_query = "%" . $fval['county'] . "%";
 		$state_query = "%" . $fval['state'] . "%";
-		$title_query = "%" . $fval['title'] . "%";
 		$start_query = "%" . $fval['start'] . "%";
 		$lotnum = ($fval['lot'] == '') ? -1 : $fval['lot'];
 
@@ -226,7 +223,7 @@ if(isset($_GET['start']))
 		}
 
 	// BIND VARIABLES
-		if (!$stmt->bind_param( 'sissssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $title_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
+		if (!$stmt->bind_param( 'sisssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
 			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
 		}
 
@@ -249,24 +246,9 @@ if(isset($_GET['start']))
 	so we can't use mysqli_stmt::get_result(). To allow us to stick with 'SELECT *', 
 	though, we iterate through the returned fields in the metadata and bind that way.
 */
-//	TODO: Only select the fields we need.
 
 	$stmt->store_result();
-	$meta = $stmt->result_metadata();
-    while ($field = $meta->fetch_field())
-    {
-        $params[] = &$row[$field->name];
-    }
-
-    call_user_func_array(array($stmt, 'bind_result'), $params);
-    
-	while ($stmt->fetch()) {
-		foreach($row as $key => $val)
-		{
-			$c[$key] = $val;
-		}
-		$result[] = $c;
-    }
+	$stmt->bind_result($res_month, $res_year, $res_title, $res_thumb_url, $res_small_url, $res_pname, $res_cnumber);
     
     $rows = $stmt->num_rows;
 
@@ -299,34 +281,31 @@ if(isset($_GET['start']))
     {
     	$stmt->data_seek($j);
     	$stmt->fetch();
-//   		echo $row['pname'];
 
-//		$row = $res->fetch_array(MYSQLI_ASSOC);
-        $pmon =  intval($row['month']);
-        $pdate = $mons[$pmon] . $row['year'];
-        $ptitle = $row['title'];
+        $pmon =  intval($res_month);
+        $pdate = $mons[$pmon] . $res_year;
+        $ptitle = $res_title;
         if(strlen($ptitle) > 90) {
-            $ptitle = substr($ptitle,0,85) . "...";
         }
        echo '<div class="results-container">';
-       echo '<div class="results-image"><a href=/records/index.php?record=' .$row['cnumber'] . '>';
+       echo '<div class="results-image"><a href=/records/index.php?record=' . $res_cnumber . '>';
        echo '<img class="results-thumb" src="';
-    if (substr($row['thumb_url'], -2) != 'NA') {
-      if ($row['thumb_url'] == '') {
+    if (substr($res_thumb_url, -2) != 'NA') {
+      if ($res_thumb_url == '') {
 	      echo '/images/nophoto.png';
       }
-      if ($row['thumb_url'] != '') {
-  	  	echo 'http://photogrammar.research.yale.edu/photos' . $row['thumb_url'];
+      if ($res_thumb_url != '') {
+  	  	echo 'http://photogrammar.research.yale.edu/photos' . $res_thumb_url;
   	  }
     }
-    if (substr($row['thumb_url'], -2) == 'NA') {
-  	  echo 'http://photogrammar.research.yale.edu/photos' . $row['small_url'];
+    if (substr($res_thumb_url, -2) == 'NA') {
+  	  echo 'http://photogrammar.research.yale.edu/photos' . $res_small_url;
     }
        echo '" />';
        echo '</a></div><!--/.results-image-->' . PHP_EOL;
        echo '<div id="results-meta">';
        echo '<div id="results-title">' . $ptitle . '</div>';
-       echo '<div id="results-photographer">' .$row['pname'] . '</div>';
+       echo '<div id="results-photographer">' .$res_pname . '</div>';
        echo '<div id="results-date">' . $pdate . '</div>';
        if(($j - sanitize_int('start')) % 6 == 5);
        echo '</div><!--/#results-meta-->' . PHP_EOL;

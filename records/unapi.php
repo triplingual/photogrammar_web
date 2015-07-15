@@ -99,8 +99,6 @@ if (isset($_GET['format'])){
 	$medium = $mediumandsizeexploded[0];
 	$size = $mediumandsizeexploded[1];
 
-	    
-	
 	echo '<rdf:RDF xmlns:link="http://purl.org/rss/1.0/modules/link/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:res="http://purl.org/vocab/resourcelist/schema#" xmlns:z="http://www.zotero.org/namespaces/export#" xmlns:ctag="http://commontag.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:bilbio="http://purl.org/net/biblio#" xmlns:bibo="http://purl.org/ontology/bibo/" xmlns:foaf="http://xmlns.com/foaf/0.1/">
 	
 	<bibo:Image rdf:about="http://photogrammar.yale.edu/records/index.php?record='. $thispic .'">
@@ -119,9 +117,6 @@ if (isset($_GET['format'])){
 	<dcterms:creator rdf:nodeID="' . $pnominitials . '"/>
 	
 	<link:link rdf:resource="#'. str_replace('/PP','',$thispic) .'"/>
-
-	
-	
 	
 	<bibo:authorList>
 	<foaf:Person rdf:nodeID="' . $pnominitials .'">

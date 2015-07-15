@@ -347,7 +347,7 @@ function build_pager_markup( $rows, $querystring )
         	$query_call = http_build_query($query_arr);
         	$pagerstring .= '<a href="' . '/search/results.php?' . $query_call . '">&laquo; </a>';
     	}
-        	$pagerstring .= (sanitize_int('start') + 1)  . '-' . min(sanitize_int('start') + 60, $rows);
+        	$pagerstring .= (sanitize_int('start') + 1)  . ' &#8211; ' . min(sanitize_int('start') + 60, $rows) . ' of ' . $rows;
     }
 	if(sanitize_int('start') + 60 < $rows) {
 		$query_arr = $_GET;

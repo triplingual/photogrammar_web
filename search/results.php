@@ -255,21 +255,20 @@ if(isset($_GET['start']))
 	$stmt->bind_result($res_month, $res_year, $res_title, $res_thumb_url, $res_small_url, $res_pname, $res_cnumber);
     
     $rows = $stmt->num_rows;
+   	$pictures = ( $rows > 1 ) ? "pictures" : "picture";
 
     if(get_post('search') != "") {
-        echo '<div id="results-total"><h2>' . $rows . ' pictures of ' . get_post('search') . '</h2>';
+        echo '<div id="results-total"><h2>' . $rows . ' ' . $pictures . ' of ' . get_post('search') . '</h2>';
     } else {
         echo '<div id="results-total"><h2>Advanced Search</h2><br>';
-    echo '<span>';
-    echo $rows . " pictures ";
-   if ($fval['pname'] != '') { echo "by " . $fval['pname']; };
-       if ($fval['lot'] != '') { echo " in Lot Number " . $fval['lot']; };
-    echo  " from ";
-
-    if ($fval['month_start'] != '') {echo $mons[$fval['month_start']] . " ";};
-
-    echo $fval['year_start'] . " to " . $mons[$fval['month_stop']] . " " .  $fval['year_stop'] . ": ";
-
+		echo '<span>';
+		echo $rows . " " . $pictures ." ";
+		if ($fval['pname'] != '') { echo "by " . $fval['pname']; };
+		if ($fval['lot'] != '') { echo " in Lot Number " . $fval['lot']; };
+		echo  " from ";
+		if ($fval['month_start'] != '') {echo $mons[$fval['month_start']] . " ";};
+		if ($fval['month_start'] == '0') {echo "January ";};
+		echo $fval['year_start'] . " to " . $mons[$fval['month_stop']] . " " .  $fval['year_stop'] . ": ";
         echo '</span>';
     }
 	echo '</div><!--/#results-total-->' . PHP_EOL;

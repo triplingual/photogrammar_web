@@ -6,7 +6,7 @@
     <div class="jumbotron" style="padding-top:100px">
       <div class="container">
         <h1>Welcome!</h1>
-	<p>Photogrammar is a web-based platform for organizing, searching, and visualizing the 170,000 photographs from 1935 to 1945 created by the United State’s Farm Security Administration and Office of War Information (FSA-OWI). </p>
+	<p>Photogrammar is a web-based platform for organizing, searching, and visualizing the 170,000 photographs from 1935 to 1945 created by the United States Farm Security Administration and Office of War Information (FSA-OWI). </p>
         <p><a class="btn btn-primary btn-lg" href="/map" role="button">Start exploring &raquo;</a></p>
       </div>
     </div>
@@ -35,7 +35,13 @@
       <hr>
 
       <footer>
-        <p></p>
+      <div class="row">
+        <div class="col-md-2">        <p><a href="http://www.yale.edu"><img src="../images/yale-logo-blue2x.png" style="height:70px;"></a></p>
+        </div>
+        <div class="col-md-2">
+        <p><a href="http://www.neh.gov/divisions/odh"><img src="../images/neh_logo_horizontal_rgb_hires.png" style="width:263px;height:65px;"></a></p>
+        </div>
+      </div>
       </footer>
     </div> <!-- /container -->
 

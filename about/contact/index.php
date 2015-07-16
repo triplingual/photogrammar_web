@@ -9,8 +9,7 @@
         <div class="col-lg-2"></div>
         <div class="col-lg-8 col-med-12">
           <h2>Contact Information</h2>
-         <p>E-mail: photogrammar@yale.edu</p>  
-         <p>Twitter: @photogrammar</p>  
+         <p>For comments or issues please contact the project's co-director Lauren Tilton (thephotogrammar at gmail.com)</p>  
         </div>
       </div>
 

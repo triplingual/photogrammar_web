@@ -3,16 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, user-scalable=no,maximum-scale=1, initial-scale=1.0 ">
+    <meta name="viewport" content="width=device-width, user-scalable=no,maximum-scale=1, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-<?php
-// TODO Use the $page variable to make this title more robust and accurate
-// e.g. <title>Photogrammar<php echo ($page != "" ? " | " . 
-//								ucfirst($page) : ""); ></title>
-?>
     <title>Photogrammar</title>
 
     <!-- Bootstrap core CSS -->
@@ -24,7 +19,17 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Custom styles for this template -->
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54264027-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+
   </head>
 <!-- NAVBAR
 ================================================== -->
@@ -40,20 +45,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="/"><img src="http://photogrammar.yale.edu/images/photogrammar-wordmark.jpg" alt="Yale Photogrammar" title="Yale Photogrammar" height=50px /></a></a>
+             </button>
+              <a class="navbar-brand" href="/"><img src="http://photogrammar.yale.edu/images/photogrammar-wordmark.jpg" alt="Yale Photogrammar" title="Yale Photogrammar" height="50" /></a>
             </div>
             <div class="navbar-collapse collapse">
               <ul class="nav navbar-nav navbar-right">
                 <li class="<?php echo ($page == "home" ? "active" : "")?>"><a href="/">Home</a></li>
-                <li class="<?php echo ($page == "map" ? "active" : "")?>"><a href="/map">Map</a></li>
+                <li class="dropdown <?php echo ($page == "map" ? "active" : "")?>">
+                  <a href="#" class="dropdown-toggle <?php echo ($page == "about" ? "active" : "")?>" data-toggle="dropdown">Maps<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="/map/">Counties</a></li>
+                    <li><a href="/map/dots.php">Dots</a></li> 
+                  </ul>
                 <li class="<?php echo ($page == "search" ? "active" : "")?>"><a href="/search">Search</a></li>
                 <li class="dropdown <?php echo ($page == "about" ? "active" : "")?>">
                   <a href="#" class="dropdown-toggle <?php echo ($page == "about" ? "active" : "")?>" data-toggle="dropdown">About<b class="caret"></b></a>
                   <ul class="dropdown-menu">
                     <li><a href="/about/fsa_owi">FSA-OWI</a></li>
                     <li><a href="/about/team">Team</a></li>
-                    <li><a href="/about/partners">Partners</a></li>
+                    <!--<li><a href="/about/partners">Partners</a></li>-->
                     <li class="divider"></li>
                     <li><a href="/about/contact">Contact</a></li>
                     <li><a href="/blog">Blog</a></li>

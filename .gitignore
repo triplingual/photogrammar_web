@@ -1,10 +1,26 @@
 .DS_Store
 login.php
 
-search/db_test.php
+*test*
 
-search/index copy.php
+*copy*
+
+*orig*
+
+*backup*
+
+*-prd*
+
+*/old/*
+
+deprecated
+
+preresearch
+
+pre_research
 
 *.BAK*
 
 *.NEW*
+
+*/faces/thumbs/*.jpg

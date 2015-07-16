@@ -1,94 +1,35 @@
 <?php $page = labs; ?>
 <?php include '../../header.php'; ?>
 
-        <style>
+<style>
+#chart{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+h2.switcher a:link,h2.switcher a:visited{color:#000;}
+text{pointer-events:none;}
+.grandparent text{font-weight:700;font-size:medium;font-family:Helvetica, Arial, sans-serif;text-decoration:underline;}
+rect{stroke:#fff;}
+rect.parent,.grandparent rect{stroke-width:2px;}
+.grandparent rect{fill:#fff;}
+.children rect.parent,.grandparent rect{cursor:pointer;}
+rect.parent{pointer-events:all;cursor:pointer;}
+.children:hover rect.child,.grandparent:hover rect{fill:#aaa;}
+.textdiv{line-height:normal;font-weight:700;font-family:Helvetica, Arial, sans-serif;cursor:pointer;padding:5px;}
+<![if !IE]>
+		text.hideifIE {display:none;} 
+<![endif]>
+</style>
+<div class="container" style="padding-top:50px">
+<h2>Treemap Visualization of 1942 Classification System</h2>
+<div id="chart" >
 
-  	    #chart {
-			width: 1100px;
-		    padding-top:150px;
-			background: #bbb;
-			margin: 1px auto;
-			position: relative;
-			-webkit-box-sizing: border-box;
-				-moz-box-sizing: border-box;
-					box-sizing: border-box;
-		}
-        h2.switcher a:link, h2.switcher a:visited {
-	        color:black;
-        }
-		text {
-			pointer-events: none;
-		}
-
-		.grandparent text { /* header text */
-			font-weight: bold;
-			font-size: medium;
-			
-			font-family:  Helvetica, Arial, sans-serif; 
-		}
-
-		rect {
-			
-			
-			stroke: #fff;
-		}
-
-		rect.parent,
-		.grandparent rect {
-			stroke-width: 2px;
-		}
-
-		.grandparent rect {
-			fill: #fff;
-		}
-
-		.children rect.parent,
-		.grandparent rect {
-			cursor: pointer;
-		}
-
-		rect.parent {
-			pointer-events: all; 
-			cursor: pointer;
-		}
-
-		.children:hover rect.child,
-		.grandparent:hover rect {
-			fill: #aaa;
-		}
-
-		.textdiv { /* text in the boxes */
-			
-			padding: 5px;
-		
-			font-weight: bold;
-			font-family: Helvetica, Arial, sans-serif;
-			cursor: pointer;
-		
-			background-size: 50%; 
-			height:900px;
-
-		}
-
-	</style>
-
-<div id="chart" style="padding-top:85px" class="clearfix">
-
-<script src="http://d3js.org/d3.v2.js"></script>
+<script src="http://d3js.org/d3.v2.min.js" charset="utf-8"></script>
 <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
 <script>
 	
-	/* 
-	* If running inside bl.ocks.org we want to resize the iframe to fit both graphs
-	* This bit of code was shared originally at https://gist.github.com/benjchristensen/2657838
-	*/
-	 if(parent.document.getElementsByTagName("iframe")[0]) {
-			 parent.document.getElementsByTagName("iframe")[0].setAttribute('style', 'height: 700px !important');
-		 }
+
 
 	var margin = {top: 20, right: 0, bottom: 0, left: 0},
-	width = 1100,
-	height = 600 - margin.top - margin.bottom,
+	width = (window.innerWidth -150),
+	height = (window.innerHeight - 140),
 	formatNumber = d3.format(",d"),
 	transitioning;
 
@@ -109,8 +50,8 @@
 
 	/* create svg */
 	var svg = d3.select("#chart").append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.bottom + margin.top)
+		.attr("width", width)
+		.attr("height", height)
 		.style("margin-left", -margin.left + "px")
 		.style("margin.right", -margin.right + "px")
 		.append("g")
@@ -123,14 +64,16 @@
 		.attr("class", "grandparent");
 
 	grandparent.append("rect")
+		.attr("stroke-width",1)
+		.attr("stroke","black")
 		.attr("y", -margin.top)
 		.attr("width", width)
 		.attr("height", 20);
 		
 	grandparent.append("text")
 		.attr("x", 6)
-		.attr("y", 6 - margin.top)
-		.attr("dy", ".75em");
+		.attr("y", 2 - margin.top)
+		.attr("dy", ".75em").attr("fill","blue");
 
 	/* load in data, display root */
 	d3.json("classifications.json", function(root) {
@@ -187,6 +130,7 @@
 
 			var g1 = svg.insert("g", ".grandparent")
 				.datum(d)
+						
 				.attr("class", "depth");
 
 			/* add in data */
@@ -207,12 +151,14 @@
 				.enter().append("rect")
 				   .attr("class", "child")
 				   .call(rect)
+				   
 				   .append("title")
-				   .text(function(d) { return d.name + ": " + formatNumber(d.size) + " photos"; });
+				   .text(function(d) { return d.name + ": " + formatNumber(d.size) + " photos"; }).attr("fill","black");
 				   
 
 			/* write parent rectangle */
 			g.append("rect")
+			
 				.attr("class", "parent")
 				.call(rect)
 				/* open new window based on the json's URL value for leaf nodes */
@@ -226,7 +172,18 @@
 				.text(function(d) { return d.name + ": " + formatNumber(d.size) + " photos"; }); /*should be d.value*/
 				
 
-			/* Adding a foreign object instead of a text object, allows for text wrapping */
+			/*
+			g.append("text")
+			.attr("x", 6)
+			.attr("class","hideifIE")
+			.attr("y", 2 - margin.top)
+			.attr("dy", ".75em")
+			.text(function(d) { return d.name + ": " + formatNumber(d.size); });
+*/
+			
+			
+				/* Adding a foreign object instead of a text object, allows for text wrapping */
+
 			g.append("foreignObject")
 				.call(rect)
 				/* open new window based on the json's URL value for leaf nodes */
@@ -241,7 +198,7 @@
 				.attr("dy", ".75em")
 				.html(function(d) { return  "<span style=\"color:black;\">" + d.name + " " + formatNumber(d.size) +"</span>"; 
 				})
-				
+				.attr("style","font-size:12px;")
 				.attr("class","textdiv"); //textdiv class allows us to style the text easily with CSS
 
 			/* create transition function for transitions */
@@ -303,7 +260,7 @@
 			.attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
 			.attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
 
-			.style("background-color", function(d) { return d.parent ? color(d.name) : null; })
+			.attr("fill", function(d) { return d.parent ? color(d.name) : null; })
 
 			
 		}
@@ -324,12 +281,9 @@
 
 </script>
 
+</div>
 
-      <hr>
 
-      <footer>
-        <p>&copy;</p>
-      </footer>
     </div> <!-- /container -->
 
 

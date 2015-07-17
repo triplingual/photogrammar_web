@@ -31,17 +31,24 @@ div.markerline {
 	height:0;
 	width:11px;
 	border-top:1px solid white;
-		position:relative;
+	position:relative;
 
 }
 div.colorhover {
 	height:70px;
 	width:10px;
-	vertical-align:bottom;margin-left:1px;display:inline-table;border-top:4px solid white;
+	vertical-align:bottom;
+	margin-left:1px;
+	border-top:4px solid white;
+	float:left;
 }
 
 .unbordered {
 		border-top:1px solid white;
+}
+
+div#results {
+	clear:both;
 }
 span.hue, span.sat, span.lum, span.count {display:none;}
 p.heading {font-size:0.8em;

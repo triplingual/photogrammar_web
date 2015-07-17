@@ -202,19 +202,21 @@ if(isset($_GET['start']))
 		}
 
 		$query = $query . " ORDER BY year, month, cnumber";
-
+		
 	// ASSIGN VALUES TO VARIABLES
 		$pname_query = "%" . $fval['pname'] . "%";
 		$month_start_query = $fval['month_start'];
 		$month_stop_query = $fval['month_stop'];
 		$year_start_query = $fval['year_start'];
 		$year_stop_query = $fval['year_stop'];
-		$van_query = "%" . $fval['van'] . "%";
+		$van_query = $van_string;
 		$city_query = "%" . $fval['city'] . "%";
 		$county_query = "%" . $fval['county'] . "%";
 		$state_query = "%" . $fval['state'] . "%";
 		$start_query = "%" . $fval['start'] . "%";
 		$lotnum = ($fval['lot'] == '') ? -1 : $fval['lot'];
+
+
 
 	// PREPARE QUERY
 		if (!($stmt = $mysqli->prepare($query))) {

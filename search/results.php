@@ -226,15 +226,18 @@ if(isset($_GET['start']))
 			}
 		}
 
-	// BIND VARIABLES
+	// BIND PARAMETERS
 		if (!$stmt->bind_param( 'sisssiiiis', $pname_query, $lotnum, $city_query, $county_query, $state_query, $year_start_query, $year_stop_query, $month_start_query, $month_stop_query, $van_query )) {
-			die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+			if ($DEBUGGING)	{
+				die("Binding parameters failed: (ERROR #" . $stmt->errno . ", ERROR MESSAGE: " . $stmt->error . " )<br />\n");
+			}
+			else {
+				die($ERROR_MSG);
+			}
 		}
-
     }
 
-
-// EXECUTE QUERY
+	// EXECUTE QUERY
 	if (!$stmt->execute()) {
 		if ($DEBUGGING)	{
 			die("Execute failed: (" . $stmt->errno . ") " . $stmt->error);

@@ -1,5 +1,5 @@
 <?php
-require_once 'login.php';
+require_once "../pg-config.php";
 if ($DEBUGGING) {
 	require_once '../search/functions-search.php';
 }

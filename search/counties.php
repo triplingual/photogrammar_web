@@ -1,7 +1,7 @@
 <?php
 header('Content-type: application/json; charset=utf-8');
 
-require_once 'login.php';
+require_once "../pg-config.php";
 require_once 'functions-search.php';
 
 $ERROR_MSG = "An error occurred. Please try again or send a message to <a href='mailto:thephotogrammar@gmail.com'>thephotogrammar@gmail.com</a> describing what happened.";

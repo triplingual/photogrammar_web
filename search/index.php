@@ -1,5 +1,5 @@
 <?php
-require_once 'login.php';
+require_once "../pg-config.php";
 $page = "search"; 
 include '../header.php';
 ?>

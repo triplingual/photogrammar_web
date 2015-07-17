@@ -159,7 +159,7 @@ background-color: black;
 	 })
 	 .size(100)
     .columns([
-      function(d) { return '<a target="_blank" href="http://photogrammar.yale.edu/records/index.php?record=' + d.cnumber + '"><img src="http://maps.library.yale.edu/images/public/photogrammar/' + d.tn + '" /></a><div class="byline">' + d.city + ' ' + d.dd.getMonth() + '/' + d.dd.getFullYear().toString().substring(2) + ' ' + d.pname  + '</div>'; },
+      function(d) { return '<a target="_blank" href="/records/index.php?record=' + d.cnumber + '"><img src="http://maps.library.yale.edu/images/public/photogrammar/' + d.tn + '" /></a><div class="byline">' + d.city + ' ' + d.dd.getMonth() + '/' + d.dd.getFullYear().toString().substring(2) + ' ' + d.pname  + '</div>'; },
       ])
     .sortBy(function(d){ return d.yr; })
     .order(d3.ascending);

@@ -260,7 +260,7 @@ if(isset($_GET['start']))
 	$stmt->bind_result($res_month, $res_year, $res_title, $res_thumb_url, $res_small_url, $res_pname, $res_cnumber);
     
     $rows = $stmt->num_rows;
-   	$pictures = ( $rows > 1 ) ? "pictures" : "picture";
+   	$pictures = ( $rows == 1 ) ? "picture" : "pictures";
 
     if(get_post('search') != "") {
         echo '<div id="results-total"><h2>' . $rows . ' ' . $pictures . ' of ' . get_post('search') . '</h2>';
